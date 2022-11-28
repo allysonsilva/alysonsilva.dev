@@ -1,0 +1,442 @@
+$code-colors: (
+    dark: rgb(27, 43, 52),
+    light: rgb(41, 42, 45),
+);
+
+:root {
+    --about-me-image-filter: grayscale(100%);
+
+    // Social Colors
+    --color-twitter: #03a9f4;
+
+    // Other Colours
+    --color-email: #495057;
+
+    --code-color: white;
+    --code-bg: #{map-get($code-colors, light)};
+    --code-border-color: #{shade(map-get($code-colors, light), 25%)};
+
+    --hr-bg: var(--secondary-color-light);
+
+    --blockquote-border-color: rgb(45, 55, 72);
+
+    --tags-bg: var(--color-contrast-low);
+    --tags-color: var(--color-contrast-dark);
+}
+
+[data-theme=dark] {
+    --about-me-image-filter: none;
+
+    --code-color: var(--body-color);
+    --code-bg: #{map-get($code-colors, dark)};
+    --code-border-color: #{shade(map-get($code-colors, dark), 25%)};
+
+    --hr-bg: var(--color-contrast-lower);
+
+    --blockquote-border-color: rgb(24, 120, 136);
+
+    --tags-bg: var(--color-contrast-lower);
+    --tags-color: var(--color-contrast-high);
+}
+
+::selection {
+    text-shadow: none;
+    color: v(highlight-color);
+    background-color: v(highlight-bg, lightblue);
+}
+
+// ###### //
+// COLORS //
+// ###### //
+
+.color-laravel {
+    color: rgb(255, 45, 32);
+}
+
+.color-php {
+    color: #777bb3;
+}
+
+.color-kubernetes {
+    color: #326ce5;
+}
+
+.color-golang {
+    color: #6ad7e5;
+}
+
+.color-architecture {
+    color: #ffca10;
+}
+
+.color-redis {
+    color: #a41e11;
+}
+
+.color-mongodb {
+    color: #13aa52;
+}
+
+.background-color-shell {
+    background-color: #89e051;
+}
+
+.background-color-php {
+    background-color: #777bb3;
+}
+
+// Social Colors
+
+.color-twitter {
+    color: v(color-twitter);
+}
+
+.color-github {
+    color: white;
+    text-shadow: 0px 0px 2px #333;
+}
+
+// Other Colours
+
+.color-email {
+    color: v(color-email);
+}
+
+// ##### //
+// STYLE //
+// ##### //
+
+@mixin default-link {
+    cursor: pointer;
+    font-weight: 600;
+    position: relative;
+    text-decoration: none;
+    color: var(--accent-color);
+}
+
+a {
+    @include default-link;
+
+    transition: box-shadow 0.2s ease-in-out, color 0.2s ease-in-out;
+
+    &:focus {
+        outline-width: 5px;
+        outline-offset: 2px;
+    }
+
+    &.with-icon {
+        display: inline-flex;
+        align-items: center;
+        line-height: 1;
+
+        > .icon:first-child {
+            margin-left: 0.25rem;
+        }
+    }
+}
+
+a[class*=without-style] {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+a:not(.without-style) {
+    will-change: transform;
+    text-decoration-skip-ink: auto;
+
+    &:not(.without-after)::after {
+        content: '';
+        left: 0px;
+        top: 100%;
+        width: 100%;
+        height: 3px;
+        position: absolute;
+        margin-top: 0.2rem;
+        transform: scaleX(0);
+        transition: transform 0.25s ease 0s;
+        background-color: var(--accent-color-dark);
+    }
+
+    &:hover {
+        color: var(--accent-color-dark);
+
+        &:not(.without-after)::after {
+            transform: scaleX(1);
+        }
+    }
+
+    &:not(.without-focus):focus,
+    &:not(.without-focus):active {
+        outline: 0.15em solid currentColor;
+        border-bottom: 0.1em solid currentColor;
+
+        &::after {
+            height: 0;
+            content: none;
+        }
+    }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    a:not(.without-heading-link-style) {
+        transition: color 0.2s ease-in-out !important;
+
+        &::after {
+            height: 0 !important;
+            content: none !important;
+            transform: unset !important;
+        }
+    }
+}
+
+.about-me {
+    padding: 1rem;
+    text-align: left;
+    border: 2px dashed;
+    border-radius: 5px;
+
+    @include flex-between;
+
+    * {
+        margin-top: 0;
+    }
+
+    > * {
+        flex-grow: 1;
+    }
+
+    .about-me__intro {
+        width: 60%;
+
+        &:hover .about-me__hi .hand {
+            animation-name: waving;
+            animation-duration: 0.2s;
+            animation-direction: alternate;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+            transform-origin: 75% 90%;
+        }
+    }
+
+    .about-me__hi {
+        line-height: 1.25;
+
+        .hand {
+            font-size: 1.3em;
+            display: inline-block;
+        }
+    }
+
+    .about-me__image {
+        top: 1em;
+        flex-grow: 0;
+        position: relative;
+        width: 100px;
+        height: 100px;
+        overflow: hidden;
+        border-radius: 50%;
+
+        img {
+            width: 100%;
+            height: auto;
+            filter: v(about-me-image-filter);
+        }
+    }
+}
+
+.list-posts {
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .text-info {
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        font-size: var(--large-text-md);
+    }
+}
+
+.post-preview {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid v(secondary-color-light);
+
+    --font-size-items: 0.85em;
+
+    .post-preview__meta {
+        margin-top: 0.5rem;
+        color: v(article-header-meta-color);
+        font-size: v(font-size-items);
+    }
+
+    .post-preview__content {
+        margin-top: 1rem;
+    }
+
+    .post-preview__subtitle {
+        font-weight: 400;
+        font-size: 1rem;
+        line-height: 1.25;
+    }
+
+    .post-preview__footer {
+        margin: 1rem 0;
+
+        @include flex-between;
+    }
+
+    .post-preview__tags {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        align-content: space-between;
+        flex-wrap: wrap;
+
+        font-size: var(--font-size-items);
+
+        > :first-child {
+            margin-right: 0.25em;
+            color: v(color-contrast-label);
+        }
+
+        > a {
+            font-size: 0.75em;
+
+            @include tag-link;
+        }
+    }
+
+    .post-preview__link {
+        @media (min-width: 30em) {
+            flex-basis: calc(50% - 0.5rem);
+        }
+
+        > a {
+            border: none;
+
+            @media (max-width: 30em) {
+                display: none !important;
+            }
+        }
+    }
+}
+
+.link-see-all-posts {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+blockquote {
+    font-weight: 400;
+    font-style: italic;
+    font-size: 1.15rem;
+    overflow-wrap: break-word;
+    margin: 1.5rem 0;
+    padding: 0.5em 0 0.5em 1em;
+    border-left: solid 5px v(blockquote-border-color);
+
+    > :first-child {
+        margin-top: 0;
+    }
+
+    > :last-child {
+        margin-bottom: 0;
+    }
+}
+
+hr {
+    height: 1px;
+    border: 0;
+    padding: 0;
+    margin: 1.5rem 0;
+    background-color: v(hr-bg);
+}
+
+code,
+kbd,
+samp,
+pre {
+    font-family:
+        'Monaco',
+        'Menlo', /* macOS 10.10+ */
+        'Consolas', /* Windows 6+ */
+        'Roboto Mono', /* Android 4+ */
+        'Ubuntu Monospace', /* Ubuntu 10.10+ */
+        'Noto Mono', /* KDE Plasma 5+ */
+        'Oxygen Mono', /* KDE Plasma 4+ */
+        'Andale Mono',
+        'Liberation Mono', /* Linux/OpenOffice fallback */
+        monospace, /* fallback */
+        'Apple Color Emoji', /* macOS emoji */
+        'Segoe UI Emoji', /* Windows emoji */
+        'Segoe UI Symbol', /* Windows emoji */
+        'Noto Color Emoji' /* Linux emoji */
+        !important;
+}
+
+pre,
+code {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    font-size: 0.9em !important;
+    border-radius: 5px !important;
+    color: v(code-color);
+    background-color: v(code-bg, rgba(255, 255, 255, 0.075)) !important;
+}
+
+.code-toolbar > .toolbar {
+    a,
+    span,
+    button {
+        font-size: 0.65em !important;
+    }
+}
+
+:not(pre) > code {
+    white-space: normal;
+    border: solid 1px v(code-border-color, none);
+}
+
+code {
+    &:not([class]) {
+        margin: 0 0.25em;
+        padding: 0.1em 0.15em;
+    }
+}
+
+pre:not([class]) {
+    -webkit-overflow-scrolling: touch;
+
+    tab-size: 4;
+    margin: 1em 0 2em 0;
+
+    code:not([class]) {
+        display: block;
+        white-space: pre-wrap;
+        padding: 1em 1.5em;
+        margin: 0;
+        border: none;
+        line-height: 1.75;
+        overflow: auto;
+    }
+}
+
+// ####### //
+// VENDORS //
+// ####### //
+
+.popup-request-notification {
+    font-size: 0.7rem !important;
+
+    button.confirm-button {
+        font-size: 1em !important;
+        margin-left: 1em !important;
+    }
+}

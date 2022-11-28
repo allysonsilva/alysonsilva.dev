@@ -1,0 +1,70 @@
+@mixin fluid-type($properties, $min-vw, $max-vw, $min-font-size, $max-font-size) {
+    $unit-min-vw: unit($min-vw);
+    $unit-max-vw: unit($max-vw);
+    $unit-min-font-size: unit($min-font-size);
+    $unit-max-font-size: unit($max-font-size);
+
+    @if $unit-min-vw == $unit-max-vw and
+        $unit-min-vw == $unit-min-font-size and
+        $unit-min-vw == $unit-max-font-size
+    {
+        & {
+            @each $property in $properties {
+                #{$property}: $min-font-size;
+            }
+
+            @media screen and (min-width: $min-vw) {
+                @each $property in $properties {
+                    #{$property}: calc(
+                        #{$min-font-size} +
+                            #{strip-unit($max-font-size - $min-font-size)} *
+                            ((100vw - #{$min-vw}) / #{strip-unit($max-vw - $min-vw)})
+                    );
+                }
+            }
+
+            // @media screen and (min-width: $max-vw) {
+            //     @each $property in $properties {
+            //         #{$property}: $max-font-size;
+            //     }
+            // }
+        }
+    }
+}
+
+@mixin font-smooth {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+@mixin display-grid($min-width) {
+    @supports (display: grid) {
+        display: grid;
+        grid-column-gap: var(--gap-horizontal, 1rem);
+        grid-row-gap: var(--gap-vertical, 1rem);
+        // grid-template-columns: repeat(auto-fit, minmax($min-width, 1fr));
+        // grid-auto-rows: minmax(10vw, auto);
+
+        &::after,
+        &::before {
+            content: none;
+        }
+
+        > * {
+            width: auto;
+            margin: 0;
+        }
+    }
+}

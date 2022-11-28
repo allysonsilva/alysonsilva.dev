@@ -1,0 +1,108 @@
+$colors: (
+    body-bg: (
+        light: rgb(240, 240, 240),
+        dark: rgb(30, 30, 30), // || #1c1c21 || #292a2d || #282c35
+    ),
+    accent-color: (
+        light: #0c84c8, // || #0096cc || #18bfef || #212931
+        dark: #e44c65,
+    ),
+    primary-color: (
+        default: rgb(37, 37, 37), // || #18191a || #242526 || #2B2B2B
+        dark: rgb(227, 227, 227),
+    ),
+    secondary-color: (
+        default: rgb(117, 117, 117),
+        light: rgb(153, 153, 153),
+        slight: rgb(209, 208, 210),
+        dark: rgb(74, 85, 104), // || #42464c
+    ),
+);
+
+@function color($category, $key: default, $variable: $colors) {
+    @if map-has-key($variable, $category) {
+        @return map-get(map-get($variable, $category), $key);
+    }
+
+    @error "Unknown `#{$key}` in $colors.";
+    @return null;
+}
+
+:root {
+    --body-bg: #{color(body-bg, light)};
+    --body-color: var(--primary-color);
+
+    --primary-color: #{color(primary-color)};
+    --primary-color-light: color-mod(var(--primary-color) tint(20%));
+    --primary-color-dark: color-mod(var(--primary-color) shade(30%));
+
+    --secondary-color: #{color(secondary-color)};
+    --secondary-color-light: #{color(secondary-color, light)};
+    --secondary-color-slight: #{color(secondary-color, slight)};
+    --secondary-color-dark: #{color(secondary-color, dark)};
+
+    --accent-color: #{color(accent-color, light)};
+    --accent-color-light: color-mod(var(--accent-color) tint(15%));
+    --accent-color-dark: color-mod(var(--accent-color) shade(15%));
+
+    /* highlight */
+    --highlight-bg: #0085a1;
+    --highlight-color: white;
+
+    /* miscellaneous */
+
+    /* feedback */
+    --success-color: #22bb33;
+    --error-color: #bb2124;
+    --warning-color: #f4a83c;
+
+    // Shades of Gray Color Palette | Grayscale Color Palette
+    --color-contrast-label: rgb(117, 117, 117);
+    --color-contrast-meta: rgb(122, 122, 122);
+
+    --color-contrast-lower: rgb(242, 242, 242);
+    --color-contrast-low: rgb(216, 216, 217);
+    --color-contrast-medium: rgb(152, 152, 154);
+    --color-contrast-high: rgb(49, 49, 53);
+    --color-contrast-higher: rgb(28, 28, 33);
+
+    --color-contrast-light: rgb(198, 198, 198);
+    --color-contrast-light-medium: rgb(170, 170, 170);
+    --color-contrast-light-low: rgb(153, 153, 153);
+
+    --color-contrast-dark-low: rgb(85, 85, 85);
+    --color-contrast-dark-medium: rgb(69, 69, 69);
+    --color-contrast-dark: rgb(51, 51, 51);
+}
+
+[data-theme=dark] {
+    @supports (--css: variables) {
+        --body-bg: #{color(body-bg, dark)};
+        --body-color: var(--primary-color);
+
+        // --primary-color: color-mod(white alpha(-15%));
+        --primary-color: #{color(primary-color, dark)};
+        --primary-color-light: white;
+        --primary-color-dark: white;
+
+        --secondary-color: rgb(144, 144, 146);
+        --secondary-color-light: rgb(170, 170, 170);
+        --secondary-color-slight: color-mod(#{color(secondary-color, slight)} tint(15%));
+        --secondary-color-dark: rgb(93, 93, 95);
+
+        --accent-color: #{color(accent-color, dark)};
+        --accent-color-light: #{darken(color(accent-color, dark), 5%)};
+        --accent-color-dark: #{shade(color(accent-color, dark), 20%)};
+
+        /* highlight */
+        --highlight-bg: #187888;
+        --highlight-color: white;
+
+        // Shades of Gray Color Palette | Grayscale Color Palette
+        --color-contrast-lower: rgb(46, 46, 51);
+        --color-contrast-low: rgb(67, 67, 71);
+        --color-contrast-medium: rgb(144, 144, 146);
+        --color-contrast-high: rgb(227, 227, 227);
+        --color-contrast-higher: rgb(255, 255, 255);
+    }
+}

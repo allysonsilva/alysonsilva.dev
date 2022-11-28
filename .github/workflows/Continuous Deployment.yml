@@ -1,0 +1,170 @@
+name: Continuous Deployment
+
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            - main
+        paths:
+            - '**.php'
+
+env:
+    DOCKER_FOLDER: ./docker
+
+jobs:
+
+    publish:
+        if: (!contains(github.event.head_commit.message, 'skip deploy'))
+        name: Deploy New Blog Version
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v3
+              with:
+                submodules: recursive
+
+            - name: Google Auth
+              id: 'auth'
+              uses: 'google-github-actions/auth@v1'
+              with:
+                credentials_json: '${{ secrets.GCLOUD_SERVICE_ACCOUNT_KEY }}'
+                service_account: ${{ vars.GCLOUD_SERVICE_ACCOUNT_EMAIL }}
+
+            - name: Google Set Up Cloud SDK
+              uses: google-github-actions/setup-gcloud@v1
+              with:
+                project_id: ${{ secrets.PROJECT_ID }}
+
+            - name: Google Setup
+              run: |-
+                gcloud config set project ${{ vars.GCLOUD_PROJECT_ID }}
+                gcloud config set account ${{ vars.GCLOUD_SERVICE_ACCOUNT_EMAIL }}
+                gcloud auth configure-docker ${{ vars.GCLOUD_CONFIGURE_DOCKER_REGISTER }}
+                gcloud auth list
+                gcloud info
+                gcloud artifacts repositories list
+
+            - name: Setup Docker
+              env:
+                USER_UID_SHELL: ${{ vars.USER_UID_SHELL }}
+                USER_GID_SHELL: ${{ vars.USER_GID_SHELL }}
+              run: |-
+                cd ${DOCKER_FOLDER} && make docker/config-env
+                cp .dockerignore ./../
+                sed -i \
+                    -e "/^APP_DOMAIN.*/c\APP_DOMAIN=${{ vars.APP_DOMAIN }}" \
+                    -e '/^APP_DOCKER_REPO.*/c\APP_DOCKER_REPO=${{ vars.APP_DOCKER_REPO }}' .env
+
+            - name: Import environment variables from a file
+              id: import-env
+              uses: cardinalby/export-env-action@v2
+              with:
+                envFile: '${{ github.workspace }}/${{ env.DOCKER_FOLDER }}/.env'
+                expand: 'true'
+
+            - name: Testing exported environment variables
+              run: |
+                echo "APP_PATH = $APP_PATH"
+                echo "DOCKER_PATH = $DOCKER_PATH"
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Build && Push [VENDOR] STAGE
+              if: ${{ vars.WITH_BUILD_APP_VENDOR == 'true' }}
+              run: |-
+                cd ${DOCKER_FOLDER}
+                make docker/app/vendor/build
+                make docker/app/vendor/push
+
+            - name: Build && Push [VENDOR] To GitHub Cache
+              if: ${{ vars.WITH_CACHE_APP_VENDOR == 'true' }}
+              uses: docker/build-push-action@v5
+              with:
+                context: .
+                load: true
+                push: false
+                target: vendor
+                file: ${{ env.DOCKER_PHP_PATH }}/Dockerfile
+                cache-from: |
+                  type=gha,scope=vendor
+                cache-to: type=gha,mode=max,scope=vendor
+
+            - name: Build && Push [FRONT-END] STAGE
+              if: ${{ vars.WITH_BUILD_APP_FRONTEND == 'true' }}
+              run: |-
+                cd ${DOCKER_FOLDER}
+                make docker/app/frontend/build
+                make docker/app/frontend/push
+
+            - name: Build && Push [FRONT-END] To GitHub Cache
+              if: ${{ vars.WITH_CACHE_APP_FRONTEND == 'true' }}
+              uses: docker/build-push-action@v5
+              with:
+                context: .
+                load: true
+                push: false
+                target: frontend
+                file: ${{ env.DOCKER_PHP_PATH }}/Dockerfile
+                cache-from: |
+                  type=gha,scope=frontend
+                cache-to: type=gha,mode=max,scope=frontend
+
+            - name: Build && Push [EXTENSIONS + PACKAGES] STAGE
+              if: ${{ vars.WITH_BUILD_APP_DEPENDENCIES == 'true' }}
+              run: |-
+                cd ${DOCKER_FOLDER}
+                make docker/app/dependencies/build
+                make docker/app/dependencies/push
+
+            - name: Build && Push [EXTENSIONS + PACKAGES] To GitHub Cache
+              if: ${{ vars.WITH_CACHE_APP_DEPENDENCIES == 'true' }}
+              uses: docker/build-push-action@v5
+              with:
+                context: .
+                load: true
+                push: false
+                target: dependencies
+                file: ${{ env.DOCKER_PHP_PATH }}/Dockerfile
+                cache-from: |
+                  type=gha,scope=dependencies
+                cache-to: type=gha,mode=max,scope=dependencies
+
+            - name: Create Required Dependency Files
+              run: |-
+                touch ${DOCKER_FOLDER}/mysql/ssl/ca.pem
+                touch ${DOCKER_FOLDER}/mysql/ssl/client-key.pem
+                touch ${DOCKER_FOLDER}/mysql/ssl/client-cert.pem
+
+            - name: Build && Push [MAIN-APP] 🔥
+              uses: docker/build-push-action@v5
+              with:
+                context: .
+                push: true
+                target: main
+                file: ${{ env.DOCKER_PHP_PATH }}/Dockerfile
+                # platforms: linux/amd64,linux/arm64
+                build-args: |
+                  "DOCKER_FOLDER=${{ env.DOCKER_FOLDER }}"
+                  "APP_DOCKER_REPO=${{ env.APP_DOCKER_REPO }}"
+                cache-from: |
+                  type=gha,scope=vendor
+                  type=gha,scope=frontend
+                  type=gha,scope=dependencies
+                  type=gha,scope=main
+                cache-to: |
+                  type=gha,mode=max,scope=main
+                tags: |
+                  ${{ env.APP_DOCKER_IMAGE }}
+
+            - name: 'Update APP - Deploy Blue-Green 🚀'
+              uses: appleboy/ssh-action@master
+              with:
+                host: ${{ secrets.SSH_HOST }}
+                username: ${{ secrets.SSH_USER }}
+                key: ${{ secrets.SSH_KEY }}
+                port: ${{ secrets.SSH_PORT }}
+                script: |-
+                  cd ${{ vars.APP_PATH }}/${{ env.DOCKER_FOLDER }}/
+                  bash ./scripts/deploy-new-version.sh

@@ -1,0 +1,233 @@
+$btn-colors: (
+    bg-light: rgb(102, 102, 102),
+    bg-dark: rgb(67, 67, 71),
+);
+
+:root {
+    --btn-font-size: calc(var(--base-font-size) - 0.2rem);
+
+    --btn-sm: calc(var(--btn-font-size) - 0.2rem);
+    --btn-md: calc(var(--btn-font-size) + 0.2rem);
+    --btn-lg: calc(var(--btn-font-size) + 0.4rem);
+
+    --btn-bg: #{map-get($btn-colors, bg-light)};
+    --btn-color: white;
+    --btn-border-width: 0.095em;
+    --btn-border-color: color-mod(var(--btn-bg) shade(10%));
+    --btn-hover: color-mod(var(--btn-bg) tint(5%));
+    --btn-active: color-mod(var(--btn-bg) shade(15%));
+
+    --btn-light-color: color-mod(var(--btn-bg) tint(10%));
+    --btn-light-border: color-mod(var(--btn-light-color) tint(50%));
+    --btn-light-hover: var(--btn-light-color);
+    --btn-light-bg-hover: color-mod(var(--btn-light-color) tint(90%));
+    --btn-light-color-icon: color-mod(var(--btn-light-color) shade(10%));
+
+    --btn-accent-bg: var(--accent-color);
+    --btn-accent-hover: var(--accent-color-light);
+    --btn-accent-active: var(--accent-color-dark);
+}
+
+[data-theme=dark] {
+    --btn-bg: #{map-get($btn-colors, bg-dark)};
+    --btn-color: var(--primary-color);
+    --btn-border-color: 0;
+    --btn-border-width: 1.5px;
+    --btn-hover: #{tint(map-get($btn-colors, bg-dark), 5%)};
+    --btn-active: #{tint(map-get($btn-colors, bg-dark), 10%)};
+
+    --btn-light-color: var(--secondary-color-slight);
+    --btn-light-border: var(--btn-bg);
+    --btn-light-hover: var(--accent-color-dark);
+    --btn-light-bg-hover: transparent;
+    --btn-light-color-icon: var(--secondary-color-slight);
+}
+
+input[type='submit'],
+input[type='reset'],
+input[type='button'],
+button,
+.btn {
+    appearance: none;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    position: relative;
+    transition: background-color 0.2s ease-in-out,
+                color 0.2s ease-in-out,
+                border-color 0.2s ease-in-out,
+                box-shadow 0.2s ease-in-out,
+                transform 0.2s, border-width 0.2s;
+
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    color: v(btn-color);
+    background-color: v(btn-bg);
+
+    line-height: 1.2;
+    font-weight: 600;
+    font-size: v(btn-font-size);
+
+    border-radius: v(btn-border-radius, 4px);
+    border: v(btn-border-width) solid v(btn-border-color);
+
+    padding: v(space-sm) v(space-lg);
+
+    &:hover,
+    &:active {
+        border-color: v(btn-hover);
+        background-color: v(btn-hover);
+    }
+
+    &:focus {
+        outline-offset: 0;
+        outline: 0.12em solid transparent;
+        box-shadow: 0.2em 0.2em v(btn-hover);
+    }
+
+    &:active {
+        transform: translateY(2px);
+        background-color: v(btn-active);
+    }
+
+    &:disabled,
+    &.disabled {
+        opacity: 0.25;
+        box-shadow: none;
+        font-weight: 600;
+        cursor: not-allowed;
+        pointer-events: none;
+        transform: unset !important;
+        color: #f5f5f5 !important;
+        border-color: unset !important;
+
+        &:not(.light) {
+            background-color: #777 !important;
+        }
+    }
+
+    &.icon {
+        padding-left: 1.35em;
+
+        &:before {
+            transition: color 0.2s ease-in-out;
+            margin-right: 0.5em;
+        }
+    }
+
+    &.small {
+        --btn-border-width: 0.12em;
+
+        line-height: 1;
+        font-weight: 600;
+        font-size: v(btn-sm);
+    }
+
+    &.medium {
+        line-height: 1;
+        font-size: v(btn-md);
+    }
+
+    &.large {
+        --btn-border-width: 1.5px;
+
+        line-height: 1;
+        font-weight: 600;
+        font-size: v(btn-lg);
+    }
+
+    &.fit {
+        width: 100%;
+    }
+
+    &.light {
+        color: v(btn-light-color);
+        background-color: transparent;
+
+        border: v(btn-border-width) solid v(btn-light-border);
+
+        &:hover {
+            color: v(btn-light-hover);
+            border-color: v(btn-light-hover);
+            background-color: v(btn-light-bg-hover);
+
+            &.icon:before {
+                color: v(btn-light-hover) !important;
+            }
+        }
+
+        &:focus {
+            box-shadow: 0.15em 0.15em v(btn-light-border);
+        }
+
+        &:active {
+            background-color: transparent;
+        }
+
+        &.icon:before {
+            text-shadow: none;
+            color: v(btn-light-color-icon) !important;
+        }
+    }
+
+    &.primary {
+        --btn-light-color-icon: white;
+
+        box-shadow: none;
+        color: white;
+        background-color: v(accent-color);
+        border: 0.1em solid v(accent-color-dark);
+
+        &:hover {
+            background-color: v(accent-color-light);
+        }
+
+        &:active,
+        &:focus {
+            outline: none;
+            box-shadow: 0.15em 0.15em v(accent-color-dark);
+        }
+    }
+}
+
+.btn--light {
+    border: none;
+    color: v(accent-color-dark);
+    background-color: transparent;
+    box-shadow: inset 0 0 0 1px v(accent-color-dark);
+
+    &:hover,
+    &:active {
+        color: white;
+        background-color: v(accent-color-light);
+        box-shadow: inset 0 0 0 1px v(accent-color-dark);
+    }
+
+    &:focus {
+        box-shadow: inset 0 0 0 2px v(accent-color-dark);
+    }
+}
+
+/* button size */
+.btn--sm {
+    font-size: v(btn-sm);
+}
+
+.btn--md {
+    font-size: v(btn-md);
+}
+
+.btn--lg {
+    --btn-border-radius: 0.25em;
+
+    font-size: v(btn-lg);
+}
+
+.btn--full-width {
+    width: 100%;
+
+    @include flex-center;
+}

@@ -1,0 +1,71 @@
+@charset "UTF-8";
+
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Slab:200,300,400,500,600,700,800,900&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Nunito+Sans:200,300,300i,400,400i,600,600i,700,700i,800,800i,900&display=swap');
+
+// =========
+// Abstracts
+// Agrupa todas as ferramentas e auxiliares de SASS usados por todo o projeto.
+// Todas as funções globais, mixins e placeholders devem ser colocados nesta pasta.
+// =========
+
+@import "abstracts/helpers";
+@import "abstracts/mixins";
+@import "abstracts/functions";
+@import "abstracts/placeholders";
+
+// =======
+// Configs
+// =======
+
+@import "configs/common";
+@import "configs/variables";
+@import "configs/colors";
+
+// ====
+// Base
+// Contêm todo o código padrão para o projeto.
+// ====
+
+@import "base/base";
+@import "base/normalize";
+@import "base/animations";
+@import "base/typography";
+
+// ======
+// Layout
+// Contêm tudo que é necessário para criar o layout do site ou aplicação.
+// Esta pasta contêm as folhas de estilo para as partes principais do site.
+// ======
+
+@import 'layout/forms';
+@import 'layout/header';
+@import 'layout/footer';
+@import 'layout/container';
+
+// ==========
+// Components
+// Enquanto a pasta layout/ é macro (definindo a estrutura global),
+// a pasta components/ é mais focada em módulos.
+// ==========
+
+@import 'components/lists';
+@import 'components/tables';
+@import 'components/buttons';
+
+// =====
+// Pages
+// =====
+
+@import 'pages/generic';
+@import 'pages/blog';
+@import 'pages/home';
+@import 'pages/article';
+@import 'pages/about';
+
+// ======
+// Themes
+// ======
+
+@import 'themes/default';

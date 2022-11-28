@@ -1,0 +1,185 @@
+@mixin tag-link {
+    font-weight: bold;
+    letter-spacing: 0.05em;
+    text-transform: lowercase;
+
+    border-radius: 2px;
+    padding: 0.35em 0.6em;
+    margin: 0 0.25em 0.5em;
+    color: v(tags-color);
+    background-color: v(tags-bg);
+
+    &:hover {
+        color: v(accent-color-dark);
+    }
+}
+
+:root {
+    --blog-search-field-bg: transparent;
+    --blog-search-field-border-color: color-mod(var(--body-bg) shade(20%));
+    --blog-search-icons-color: #757575;
+
+    --blog-posts-article-border-color: none;
+    --blog-posts-article-shadow-color: rgb(139, 139, 139);
+}
+
+[data-theme=dark] {
+    --blog-search-field-bg: rgb(33, 33, 33);
+    --blog-search-field-border-color: rgb(37, 37, 37);
+
+    --blog-posts-article-border-color: var(--blog-search-field-border-color);
+    --blog-posts-article-shadow-color: none;
+    --blog-posts-article-subtitle-color: rgb(167, 167, 167);
+}
+
+.search__field {
+    display: flex;
+    height: 80px;
+    border-radius: 3px;
+    align-items: center;
+    background: v(blog-search-field-bg);
+    border: 1px solid v(blog-search-field-border-color);
+
+    .search__svg-icon {
+        width: 29px;
+        height: 29px;
+    }
+
+    .search__magnify {
+        cursor: text;
+        height: 100%;
+        padding: 0 1.5rem;
+        color: v(blog-search-icons-color);
+
+        @include flex-center;
+    }
+
+    input[type=text].search__input {
+        font-size: 1.15rem;
+        height: 100%;
+        padding: 0;
+        border: 0;
+        overflow: visible;
+        background: transparent;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+
+    .search__close {
+        height: 100%;
+        padding: 0 35px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: v(blog-search-icons-color);
+        will-change: color;
+        transition: color 0.25s ease 0s;
+        visibility:hidden;
+    }
+
+    form {
+        margin: 0;
+        width: 100%;
+    }
+}
+
+.search__lower {
+    margin-top: 1rem;
+
+    .search__count-results {
+        font-size: 1rem;
+        display: inline-block;
+    }
+}
+
+.category-posts {
+
+    &__card {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        justify-content: flex-start;
+
+        &-css-icon {
+            font-size: 1.2rem;
+            margin-top: 0.45rem;
+        }
+
+        &-image-icon {
+            width: 1.2rem;
+            margin-top: 0.45rem;
+        }
+    }
+
+    &__page-title {
+        margin-right: 0.5rem;
+        color: var(--primary-color-dark);
+    }
+
+    &__count-results {
+        font-size: 1rem;
+        display: inline-block;
+    }
+}
+
+.blog-posts {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
+
+    .blog-post__item {
+        display: flex;
+        flex-direction: column;
+        text-decoration: none;
+        padding: 1rem;
+        margin-bottom: 1.2rem;
+        border: 1px solid v(blog-posts-article-border-color);
+        border-radius: 3px;
+        will-change: border-color;
+        box-shadow: 0 1px 3px v(blog-posts-article-shadow-color);
+        transition: opacity 0.2s ease-out 0s;
+
+        .post-meta {
+            display: block;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: rgb(122, 122, 122);
+            margin-bottom: 1rem;
+        }
+
+        .post-title {
+            font-size: v(large-text-sm);
+            margin-bottom: 0.8rem;
+
+            will-change: transform;
+            transition: color 0.2s ease-in-out;
+        }
+
+        .post-subtitle {
+            font-size: 1rem;
+            line-height: 1.3;
+            font-weight: 600;
+            color: var(--blog-posts-article-subtitle-color, rgb(117, 117, 117));
+            margin-bottom: 1.5rem;
+            margin-top: 0;
+        }
+
+        .post-labels {
+            font-size: 0.675rem;
+
+            > .tag-holder {
+                display: inline-block;
+
+                @include tag-link;
+            }
+        }
+
+        .post-link {
+            &:hover .post-title {
+                color: var(--accent-color-dark);
+            }
+        }
+    }
+}

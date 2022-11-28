@@ -1,0 +1,141 @@
+/* Lists */
+
+ul,
+ol {
+    // list-style-position: inside;
+
+    &:not([class]) {
+        padding-left: 2em;
+    }
+}
+
+ol:not([class]) {
+    list-style-type: decimal;
+    margin-bottom: 1em;
+    padding-left: 1.25em;
+
+    li {
+        padding-left: 0.25em;
+    }
+}
+
+ul {
+    list-style-type: disc;
+    margin-bottom: 1em;
+
+    li {
+        padding-left: 0.25em;
+    }
+
+    &.alternate {
+        list-style: none;
+        padding-left: 0;
+
+        li {
+            border-top: solid 0.05em v(secondary-color-dark);
+            padding: 0.5em 0;
+
+            &:first-child {
+                border-top: 0;
+                padding-top: 0;
+            }
+        }
+    }
+}
+
+dl {
+    margin-bottom: 2em;
+}
+
+/* List of Actions */
+
+ul.actions {
+    display: flex;
+    align-items: center;
+    cursor: default;
+    list-style: none;
+    padding-left: 0;
+
+    li {
+        &:first-child {
+            padding-left: 0;
+        }
+
+        padding: 0 0 0 1em;
+        vertical-align: middle;
+    }
+
+    &.centralize {
+        width: 100%;
+        justify-content: center;
+    }
+
+    &.stacked {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+
+        li {
+            padding: 1em 0 0 0;
+
+            &:first-child {
+                padding-top: 0;
+            }
+        }
+    }
+
+    &.fit {
+        width: calc(100% + 1em);
+
+        li {
+            flex-grow: 1;
+            flex-shrink: 1;
+            width: 100%;
+
+            > * {
+                width: 100%;
+            }
+        }
+
+        &.stacked {
+            width: 100%;
+        }
+    }
+
+    @media screen and (max-width: 30em) {
+        &:not(.fixed) {
+            flex-direction: column;
+            width: 100% !important;
+
+            li {
+                flex-grow: 1;
+                flex-shrink: 1;
+                padding: 1em 0 0 0;
+                text-align: center;
+                width: 100%;
+
+                > * {
+                    width: 100%;
+                }
+
+                &:first-child {
+                    padding-top: 0;
+                }
+
+                input[type='submit'],
+                input[type='reset'],
+                input[type='button'],
+                button,
+                .btn {
+                    width: 100%;
+
+                    &.icon {
+                        &:before {
+                            margin-left: 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

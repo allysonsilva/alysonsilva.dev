@@ -1,0 +1,19 @@
+version: "2"
+authtoken:
+region: sa # South America (Sao Paulo)
+console_ui: true
+web_addr: localhost:4040
+log_level: info
+log_format: json
+log: /opt/homebrew/var/log/ngrok.log
+
+# ./ngrok --config "ngrok.yml" start localhost
+tunnels:
+    localhost:
+        proto: http
+        schemes:
+            - http
+            - https
+        addr: http://localhost:8088
+        # auth: "user:secretpassword"
+        inspect: true

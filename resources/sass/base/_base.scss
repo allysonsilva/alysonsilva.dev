@@ -1,0 +1,71 @@
+$minScreen: 20em; // 320px (16px * 20)
+$maxScreen: 90em; // 1440px (16px * 90)
+
+$minFont: 1em; // 16px
+$maxFont: 1.375em; // 22px
+
+:root {
+    @include fluid-type(font-size, $minScreen, $maxScreen, $minFont, $maxFont);
+
+    --body-line-height: 1.5;
+    --body-font-weight: 400;
+
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+
+    --max-width-xxs: 30em;  // 480px
+    --max-width-xs: 37.5em; // 600px
+    --max-width-sm: 50em;   // 800px
+    --max-width-md: 64em;   // 1024px
+    --max-width-lg: 80em;   // 1280px
+    --max-width-xl: 90em;   // 1440px
+}
+
+@media (min-width: calc(#{$maxScreen} + 0.01em)) {
+    :root {
+        font-size: var(--rem);
+    }
+}
+
+html {
+    -webkit-overflow-scrolling: touch;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -ms-text-size-adjust: 100%;
+    -moz-osx-font-smoothing: grayscale;
+    word-wrap: break-word;
+    box-sizing: border-box;
+}
+
+body {
+    font-size: inherit;
+    font-style: normal;
+    font-family: v(font-family);
+    line-height: v(body-line-height);
+    font-weight: v(body-font-weight, normal);
+
+    color: v(body-color);
+    background-color: v(body-bg);
+
+    min-height: calc(100vh);
+
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    will-change: background-color;
+    text-rendering: optimizeLegibility;
+
+    transition: background-color 0.25s ease 0s;
+
+    // font-family: system-ui,
+    //   /* macOS 10.11-10.12 */ -apple-system,
+    //   /* Windows 6+ */ "Segoe UI",
+    //   /* Android 4+ */ "Roboto",
+    //   /* Ubuntu 10.10+ */ "Ubuntu",
+    //   /* Gnome 3+ */ "Cantarell",
+    //   /* KDE Plasma 5+ */ "Noto Sans",
+    //   /* fallback */ sans-serif,
+    //   /* macOS emoji */ "Apple Color Emoji",
+    //   /* Windows emoji */ "Segoe UI Emoji",
+    //   /* Windows emoji */ "Segoe UI Symbol",
+    //   /* Linux emoji */ "Noto Color Emoji";
+}

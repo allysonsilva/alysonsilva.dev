@@ -1,0 +1,13 @@
+{
+  "presets": [
+    ["@babel/env", { "targets": ["last 2 versions"] }]
+  ],
+  "plugins": [
+    ["prismjs", {
+        "languages": ["markup", "css", "clike", "javascript", "bash", "csharp", "css-extras", "diff", "docker", "git", "go", "graphql", "javadoclike", "json", "makefile", "markdown", "markup-templating", "nginx", "php", "phpdoc", "php-extras", "properties", "regex", "sass", "scss", "sql", "swift", "yaml"],
+        "plugins": ["line-highlight", "file-highlight", "show-language", "inline-color", "keep-markup", "command-line", "normalize-whitespace", "toolbar", "diff-highlight"],
+        "theme": "okaidia",
+        "css": true
+    }]
+  ]
+}

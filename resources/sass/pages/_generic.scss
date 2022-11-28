@@ -1,0 +1,53 @@
+.container-page {
+    header {
+        position: relative;
+        margin-bottom: 2rem;
+
+        &.with-border::after {
+            left: 25%;
+            width: 50%;
+            content: "";
+            height: 0.1rem;
+            position: relative;
+            display: inline-block;
+            background-color: v(hr-bg);
+            // background-color: v(accent-color-dark);
+        }
+
+        .page-title {
+            &__icon {
+                font-size: 0.5em;
+            }
+        }
+
+        .page-subtitle {
+            line-height: 1.4;
+            font-weight: 600;
+            margin-top: 0.8rem;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02rem;
+            font-size: var(--large-text);
+            color: var(--article-header-meta-color);
+            // color: var(--article-header-subtitle-color);
+        }
+    }
+
+    .single {
+        ul {
+            padding-left: 0;
+            list-style-type: none;
+
+            li {
+                margin: 5px 10px;
+                display: inline-block;
+
+                > a {
+                    position: relative;
+                    word-wrap: break-word;
+                    overflow-wrap: break-word;
+                    text-transform: capitalize;
+                }
+            }
+        }
+    }
+}

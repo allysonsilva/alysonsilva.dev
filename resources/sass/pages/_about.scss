@@ -1,0 +1,287 @@
+:root {
+    --about-page-name-color: #2d3748;
+    --about-page-text-highlight: #5145CD;
+    --about-page-heading-color: var(--about-page-name-color);
+    --about-page-skills-label-color: var(--accent-color-dark);
+    --about-page-repository-bg: white;
+    --about-page-repository-color: #586069;
+    --about-page-repository-icons-color: var(--color-contrast-medium);
+}
+
+[data-theme=dark] {
+    --about-page-name-color: #363194;
+    --about-page-heading-color: var(--heading-color, inherit);
+    --about-page-skills-label-color: var(--accent-color-dark);
+    --about-page-repository-bg: #1C1C21;
+    --about-page-repository-color: var(--body-color);
+    --about-page-repository-icons-color: var(--secondary-color-dark);
+}
+
+$about-page-prefix: "about-page";
+
+.#{$about-page-prefix} {
+    &__intro {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+
+        padding-bottom: 3rem;
+
+        &-hi {
+            > * {
+                font-weight: 600;
+                font-size: var(--large-text-sm);
+            }
+
+            .hand {
+                font-size: 1.1em;
+                display: inline-block;
+            }
+
+            &:hover .hand {
+                animation-name: waving;
+                animation-duration: 0.2s;
+                transform-origin: 75% 90%;
+                animation-direction: alternate;
+                animation-iteration-count: infinite;
+                animation-timing-function: ease-in-out;
+            }
+        }
+
+        &-name {
+            color: v(about-page-name-color);
+        }
+
+        &-skills {
+            &-label {
+                font-weight: bold;
+                color: v(about-page-skills-label-color);
+            }
+        }
+    }
+
+    &__info {
+        overflow: auto;
+        margin: 1.5rem 0 1.5rem;
+
+        > ul {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+
+            padding: 0;
+            list-style: none;
+            font-size: 0.9rem;
+        }
+    }
+
+    &__info-text {
+        margin: 1.5rem 0;
+
+        &-title {
+            font-weight: 500;
+            text-align: center;
+            color: v(about-page-heading-color);
+        }
+
+        &-content {
+            text-align: center;
+
+            > strong {
+                color: v(about-page-text-highlight);
+            }
+        }
+    }
+
+    &__interests {
+        &-wrapper {
+            overflow-x: auto !important;
+        }
+
+        &-table {
+            min-width: 70vw;
+            font-size: 0.75em;
+            // :not([class^="devicon-"]):not(thead) {
+            //     font-size: 0.75rem;
+            // }
+
+            thead {
+                th:not([align]) {
+                    text-align: center;
+                }
+            }
+
+            tbody {
+                tr {
+                    background-color: initial!important;
+
+                    td {
+
+                        > .align-flex {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+
+                        text-align: center;
+                        padding: 0.8rem 0.55rem;
+
+                        [class^="devicon"] {
+                            font-size: 1rem;
+
+                            &:first-child {
+                                margin-right: 0.35rem;
+                            }
+                        }
+
+                        .skill-label {
+                            font-style: italic;
+                        }
+
+                        svg, img {
+                            height: 1em;
+                            width: 1.25em;
+                            font-size: 1.33em;
+                            line-height: 0.75em;
+                            display: inline-block;
+                            vertical-align: -0.225em;
+
+                            &:first-child {
+                                margin-right: 0.2rem;
+                            }
+
+                            &:not(:first-child) {
+                                margin-left: 0.3rem;
+                                margin-right: 0.15rem;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        &-linkedin-text {
+            width: 100%;
+            text-align: center;
+            font-size: 0.8rem;
+
+            > a {
+                color: v(about-page-text-highlight);
+            }
+        }
+    }
+
+    &__repositories {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+                            // repeat(auto-fit, minmax(calc(90% / 3), 1fr));
+        // grid-template-rows: auto;
+        grid-auto-rows: minmax(115px, auto);
+                            // repeat(2, auto);
+
+        &-component {
+            padding: 1rem;
+            text-align: left;
+            border-radius: 5px;
+            border: 1px solid v(color-contrast-low);
+            background-color: v(about-page-repository-bg);
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+
+            font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+
+            .repository-title {
+                font-size: 16px;
+                margin-bottom: 0.5rem;
+
+                svg {
+                    fill: v(about-page-repository-icons-color);
+                    margin-right: 0.25rem;
+                    vertical-align: middle;
+                }
+
+                > .repository-link {
+                    color: #0366D6;
+                }
+            }
+
+            .repository-description {
+                font-size: 14px;
+                font-weight: 500;
+                white-space: normal;
+                color: v(about-page-repository-color);
+
+                margin-top: 0;
+                margin-bottom: 0.35rem;
+            }
+
+            .repository-info {
+                display: flex;
+                align-items: center;
+                font-size: 12px;
+                font-weight: 500;
+                color: v(about-page-repository-color);
+
+                > .language-wrapper {
+                    margin-right: 16px;
+                    display: inline-block;
+
+                    > .language-color {
+                        width: 12px;
+                        height: 12px;
+                        margin-right: 5px;
+                        border-radius: 50%;
+                        position: relative;
+                        display: inline-block;
+                    }
+                }
+
+                > .repository-link-stars,
+                > .repository-link-forks {
+                    color: #0366D6;
+                    display: inline-block;
+
+                    > .repo-language-svg-icon {
+                        margin-right: 3px;
+                        fill: v(about-page-repository-icons-color);
+                    }
+                }
+
+                > .repository-link-forks {
+                    margin-left: 16px;
+                }
+            }
+        }
+    }
+
+    &__contact {
+        margin-top: 1rem;
+        padding-top: 1rem;
+
+        &-title {
+            font-weight: 700;
+            color: v(about-page-heading-color);
+
+            > span {
+                font-weight: 400;
+            }
+        }
+
+        &-subtitle {
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        &-text {
+            margin-top: 0;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+}

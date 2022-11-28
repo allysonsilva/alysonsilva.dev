@@ -1,0 +1,7 @@
+User-agent: *
+Disallow:
+Disallow: /blog?tag=*
+Disallow: /blog?search=*
+Disallow: /cdn-cgi/
+Disallow: /images/favicons/
+Disallow: /feed

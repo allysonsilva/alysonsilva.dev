@@ -1,0 +1,167 @@
+:root {
+    --form-font-size: 0.85rem;
+    --form-input-color: inherit;
+    --form-input-border-color: var(--secondary-color-light);
+    --form-label-color: #{color(secondary-color)};
+}
+
+[data-theme=dark] {
+    --form-input-border-color: color-mod(#{color(body-bg, light)} alpha(-80%));
+    --form-label-color: var(--secondary-color-dark);
+}
+
+::-webkit-input-placeholder {
+    opacity: 0.5;
+}
+
+form {
+    margin-bottom: 2rem;
+}
+
+fieldset {
+    border: 2px dashed v(form-input-border-color);
+    padding: 0.35rem 0.75rem 0.625rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.35em;
+    font-weight: 700;
+    font-size: v(form-font-size);
+    color: v(form-label-color);
+}
+
+input[type='text'],
+input[type='password'],
+input[type='email'],
+select,
+textarea {
+    appearance: none;
+    outline: 0;
+    transition: border-color 0.2s ease-in-out;
+    display: block;
+    text-decoration: none;
+    border: solid 2px;
+    border-color: v(form-input-border-color);
+    border-radius: 5px;
+    background-color: transparent;
+    color: v(form-input-color);
+    font-size: v(form-font-size);
+    width: 100%;
+    padding: 0 v(form-font-size);
+
+    &:invalid {
+        box-shadow: none;
+    }
+
+    &:focus {
+        border-color: v(accent-color-dark);
+    }
+}
+
+input[type='text'],
+input[type='password'],
+input[type='email'],
+select {
+    height: 2.35rem;
+}
+
+select {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' preserveAspectRatio='none' viewBox='0 0 40 40'%3E%3Cpath d='M9.4,12.3l10.4,10.4l10.4-10.4c0.2-0.2,0.5-0.4,0.9-0.4c0.3,0,0.6,0.1,0.9,0.4l3.3,3.3c0.2,0.2,0.4,0.5,0.4,0.9 c0,0.4-0.1,0.6-0.4,0.9L20.7,31.9c-0.2,0.2-0.5,0.4-0.9,0.4c-0.3,0-0.6-0.1-0.9-0.4L4.3,17.3c-0.2-0.2-0.4-0.5-0.4-0.9 c0-0.4,0.1-0.6,0.4-0.9l3.3-3.3c0.2-0.2,0.5-0.4,0.9-0.4S9.1,12.1,9.4,12.3z' fill='rgb(136, 136, 136)' /%3E%3C/svg%3E");
+    background-size: 1.25em;
+    background-repeat: no-repeat;
+    background-position: calc(100% - 1em) center;
+    padding-right: 2.5em;
+    text-overflow: ellipsis;
+
+    option {
+        color: inherit;
+    }
+
+    &:focus {
+        &::-ms-value {
+            background-color: transparent;
+        }
+    }
+
+    &::-ms-expand {
+        display: none;
+    }
+}
+
+textarea {
+    padding: 0.5rem 0.75rem;
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+    appearance: none;
+    display: block;
+    opacity: 0;
+    z-index: -1;
+    float: left;
+    width: 1em;
+    margin-right: -2em;
+
+    & + label {
+        cursor: pointer;
+        position: relative;
+        text-decoration: none;
+        display: inline-block;
+        font-size: v(form-font-size);
+        padding-left: 2.45em;
+        padding-right: 0.7em;
+
+        &:before {
+            content: "";
+            -moz-osx-font-smoothing: grayscale;
+            -webkit-font-smoothing: antialiased;
+            font-style: normal;
+            font-variant: normal;
+            text-rendering: auto;
+            text-transform: none !important;
+            font-family: 'Font Awesome 5 Free';
+            display: inline-block;
+            border: solid 2px v(form-input-border-color);
+            font-weight: 900;
+            background-color: transparent;
+            font-size: 0.8em;
+            height: 2.2em;
+            width: 2.25em;
+            line-height: 2;
+            text-align: center;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+    }
+
+    &:checked + label {
+        &:before {
+            color: white;
+            border-color: v(accent-color-light);
+            background-color: v(accent-color-light);
+            content: "\f00c";
+        }
+    }
+
+    &:focus + label {
+        &:before {
+            box-shadow: 0 0 0 0.1em v(accent-color-dark);
+        }
+    }
+}
+
+input[type='checkbox'] {
+    & + label:before {
+        border-radius: v(radius-md);
+    }
+}
+
+input[type='radio'] {
+    & + label {
+        &:before {
+            border-radius: 100%;
+        }
+    }
+}
