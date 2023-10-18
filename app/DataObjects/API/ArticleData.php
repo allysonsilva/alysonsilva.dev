@@ -16,6 +16,7 @@ use Spatie\LaravelData\Attributes\MapName;
 use Spatie\LaravelData\Mappers\SnakeCaseMapper;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\WithoutValidation;
+use Spatie\LaravelData\Support\Validation\ValidationContext;
 
 #[MapName(SnakeCaseMapper::class)]
 class ArticleData extends BaseData
@@ -46,11 +47,11 @@ class ArticleData extends BaseData
     /**
      * Get the validation rules that apply to the request.
      *
-     * @param array<string, mixed> $payload
+     * @param \Spatie\LaravelData\Support\Validation\ValidationContext $context
      *
      * @return array<string, mixed>
      */
-    public static function rules(array $payload): array
+    public static function rules(ValidationContext $context): array
     {
         $uniqueColumnsRule = Rule::unique(Article::class)->ignore(request('articleUuid'));
 

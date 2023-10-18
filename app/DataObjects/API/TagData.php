@@ -6,6 +6,7 @@ use App\Models\Tag;
 use App\Support\DTO\BaseData;
 use Illuminate\Validation\Rule;
 use Spatie\LaravelData\Optional;
+use Spatie\LaravelData\Support\Validation\ValidationContext;
 
 class TagData extends BaseData
 {
@@ -20,11 +21,11 @@ class TagData extends BaseData
     /**
      * Get the validation rules that apply to the request.
      *
-     * @param array<string, mixed> $payload
+     * @param \Spatie\LaravelData\Support\Validation\ValidationContext $context
      *
      * @return array<string, mixed>
      */
-    public static function rules(array $payload): array
+    public static function rules(ValidationContext $context): array
     {
         $uniqueColumnsRule = Rule::unique(Tag::class)->ignore(request('tagUuid'));
 
