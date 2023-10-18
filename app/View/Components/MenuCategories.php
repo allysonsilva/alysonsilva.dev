@@ -19,7 +19,7 @@ class MenuCategories extends Component
      */
     public function __construct(private Category $category)
     {
-        $this->categories = $category->oldest('order')->get();
+        $this->categories = $category->mustBeMenu()->oldest('order')->get();
     }
 
     /**

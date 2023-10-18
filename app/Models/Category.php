@@ -8,6 +8,7 @@ use App\Support\ORM\BaseModel;
 use Spatie\Sluggable\SlugOptions;
 use App\Models\Concerns\CategoryScopes;
 use Spatie\Sitemap\Contracts\Sitemapable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -32,6 +33,7 @@ class Category extends BaseModel implements Sitemapable
         'icon',
         'color',
         'order',
+        'must_be_menu',
     ];
 
     /**
@@ -40,6 +42,27 @@ class Category extends BaseModel implements Sitemapable
      * @var array
      */
     protected $appends = ['icon_url', 'icon_class'];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'must_be_menu' => 'boolean',
+    ];
+
+    /**
+     * only categories that should be listed in the website menu.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return void
+     */
+    public function scopeMustBeMenu(Builder $query): void
+    {
+        $query->where('must_be_menu', true);
+    }
 
     /**
      * Interact with the `icon_url`.
