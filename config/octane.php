@@ -35,6 +35,14 @@ return [
 
     'server' => env('OCTANE_SERVER', 'roadrunner'),
 
+    // https://github.com/laravel/octane/issues/592
+    'swoole' => [
+        'options' => [
+            'document_root' => public_path(),
+            'enable_static_handler' => true,
+        ],
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Force HTTPS
