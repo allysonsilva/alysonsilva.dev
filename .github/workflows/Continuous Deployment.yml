@@ -71,26 +71,6 @@ jobs:
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v3
 
-            - name: Build && Push [VENDOR] STAGE
-              if: ${{ vars.WITH_BUILD_APP_VENDOR == 'true' }}
-              run: |-
-                cd ${DOCKER_FOLDER}
-                make docker/app/vendor/build
-                make docker/app/vendor/push
-
-            - name: Build && Push [VENDOR] To GitHub Cache
-              if: ${{ vars.WITH_CACHE_APP_VENDOR == 'true' }}
-              uses: docker/build-push-action@v5
-              with:
-                context: .
-                load: true
-                push: false
-                target: vendor
-                file: ${{ env.DOCKER_PHP_PATH }}/Dockerfile
-                cache-from: |
-                  type=gha,scope=vendor
-                cache-to: type=gha,mode=max,scope=vendor
-
             - name: Build && Push [FRONT-END] STAGE
               if: ${{ vars.WITH_BUILD_APP_FRONTEND == 'true' }}
               run: |-
@@ -149,7 +129,6 @@ jobs:
                   "DOCKER_FOLDER=${{ env.DOCKER_FOLDER }}"
                   "APP_DOCKER_REPO=${{ env.APP_DOCKER_REPO }}"
                 cache-from: |
-                  type=gha,scope=vendor
                   type=gha,scope=frontend
                   type=gha,scope=dependencies
                   type=gha,scope=main
