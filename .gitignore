@@ -25,3 +25,7 @@ auth.json
 npm-debug.log
 .dockerignore
 /.vscode
+
+/caddy
+frankenphp
+frankenphp-worker.php

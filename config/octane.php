@@ -11,9 +11,13 @@ use Laravel\Octane\Events\TickTerminated;
 use Laravel\Octane\Events\WorkerErrorOccurred;
 use Laravel\Octane\Events\WorkerStarting;
 use Laravel\Octane\Events\WorkerStopping;
+use Laravel\Octane\Listeners\CollectGarbage;
+use Laravel\Octane\Listeners\DisconnectFromDatabases;
 use Laravel\Octane\Listeners\EnsureUploadedFilesAreValid;
 use Laravel\Octane\Listeners\EnsureUploadedFilesCanBeMoved;
+use Laravel\Octane\Listeners\FlushOnce;
 use Laravel\Octane\Listeners\FlushTemporaryContainerInstances;
+use Laravel\Octane\Listeners\FlushUploadedFiles;
 use Laravel\Octane\Listeners\ReportException;
 use Laravel\Octane\Listeners\StopWorkerIfNecessary;
 use Laravel\Octane\Octane;
@@ -29,19 +33,11 @@ return [
     | when starting, restarting, or stopping your server via the CLI. You
     | are free to change this to the supported server of your choosing.
     |
-    | Supported: "roadrunner", "swoole"
+    | Supported: "roadrunner", "swoole", "frankenphp"
     |
     */
 
-    'server' => env('OCTANE_SERVER', 'roadrunner'),
-
-    // https://github.com/laravel/octane/issues/592
-    'swoole' => [
-        'options' => [
-            'document_root' => public_path(),
-            'enable_static_handler' => true,
-        ],
-    ],
+    'server' => env('OCTANE_SERVER', 'frankenphp'),
 
     /*
     |--------------------------------------------------------------------------
@@ -76,9 +72,12 @@ return [
         RequestReceived::class => [
             ...Octane::prepareApplicationForNextOperation(),
             ...Octane::prepareApplicationForNextRequest(),
+            //
         ],
 
-        RequestHandled::class => [],
+        RequestHandled::class => [
+            //
+        ],
 
         RequestTerminated::class => [
             // FlushUploadedFiles::class,
@@ -86,17 +85,24 @@ return [
 
         TaskReceived::class => [
             ...Octane::prepareApplicationForNextOperation(),
+            //
         ],
 
-        TaskTerminated::class => [],
+        TaskTerminated::class => [
+            //
+        ],
 
         TickReceived::class => [
             ...Octane::prepareApplicationForNextOperation(),
+            //
         ],
 
-        TickTerminated::class => [],
+        TickTerminated::class => [
+            //
+        ],
 
         OperationTerminated::class => [
+            FlushOnce::class,
             FlushTemporaryContainerInstances::class,
             // DisconnectFromDatabases::class,
             // CollectGarbage::class,
@@ -107,7 +113,9 @@ return [
             StopWorkerIfNecessary::class,
         ],
 
-        WorkerStopping::class => [],
+        WorkerStopping::class => [
+            //
+        ],
     ],
 
     /*
@@ -125,22 +133,8 @@ return [
         ...Octane::defaultServicesToWarm(),
     ],
 
-    'flush' => [],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Octane Cache Table
-    |--------------------------------------------------------------------------
-    |
-    | While using Swoole, you may leverage the Octane cache, which is powered
-    | by a Swoole table. You may set the maximum number of rows as well as
-    | the number of bytes per row using the configuration options below.
-    |
-    */
-
-    'cache' => [
-        'rows' => 1000,
-        'bytes' => 10000,
+    'flush' => [
+        //
     ],
 
     /*
@@ -159,6 +153,22 @@ return [
             'name' => 'string:1000',
             'votes' => 'int',
         ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Octane Swoole Cache Table
+    |--------------------------------------------------------------------------
+    |
+    | While using Swoole, you may leverage the Octane cache, which is powered
+    | by a Swoole table. You may set the maximum number of rows as well as
+    | the number of bytes per row using the configuration options below.
+    |
+    */
+
+    'cache' => [
+        'rows' => 1000,
+        'bytes' => 10000,
     ],
 
     /*
