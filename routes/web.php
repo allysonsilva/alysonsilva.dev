@@ -37,6 +37,11 @@ Route::controller(FrontController::class)->group(function () {
 
     Route::get('/tags', 'tagsShow')->name('tags.show');
     Route::get('/hi', 'aboutMe')->name('about-me');
+
+    Route::middleware('auth:sanctum')->name('logged.')->group(function () {
+        Route::post('/notifications/add-user-to-uptime-monitor', 'addUserToBeNotifiedToUptimeMonitor')->name('notifications.add-user-to-uptime-monitor');
+        Route::post('/uptime/webhook', 'uptimeWebhook')->name('uptime.webhook');
+    });
 });
 
 // Route::get('/benchmark', function () {

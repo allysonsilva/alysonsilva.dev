@@ -129,6 +129,41 @@ try {
                 }
             }
 
+            async function addUserToUptimeNotifications(pushManager) {
+                    const subscription = await pushManager.getSubscription()
+
+                    const key = subscription.getKey('p256dh')
+                    const token = subscription.getKey('auth')
+                    const contentEncoding = (PushManager.supportedContentEncodings || ['aesgcm'])[0]
+
+                    const data = {
+                        endpoint: subscription.endpoint,
+                        public_key: key ? btoa(String.fromCharCode.apply(null, new Uint8Array(key))) : null,
+                        auth_token: token ? btoa(String.fromCharCode.apply(null, new Uint8Array(token))) : null,
+                        encoding: contentEncoding,
+                    };
+
+                    axios.post('/notifications/add-user-to-uptime-monitor', data, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        }
+                    }).then(function (response) {
+                        Swal.fire({
+                            text: 'Você foi adicionado com sucesso para receber notificações do Health Check dos monitores do UPTIME',
+                            icon: "success"
+                        });
+                    })
+                    .catch(function (error) {
+                        console.error(error.response);
+
+                        Swal.fire({
+                            text: JSON.stringify(error.response.data),
+                            icon: "error"
+                        });
+                    });
+            }
+
             const pushNotificationAccepted = () => window.localStorage.getItem('acceptPushNotifications');
 
             (async () => {
@@ -266,6 +301,12 @@ try {
 
                 document.querySelector('.enable-notifications')
                         .addEventListener('click', () => enableNotifications(registration.pushManager));
+
+                let btnUserToUptimeNotifications = document.querySelector('.add-user-to-uptime-notifications');
+
+                if (btnUserToUptimeNotifications) {
+                    btnUserToUptimeNotifications.addEventListener('click', () => addUserToUptimeNotifications(registration.pushManager));
+                }
             });
 
         } else {

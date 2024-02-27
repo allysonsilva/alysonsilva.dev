@@ -2,23 +2,20 @@
 
 namespace App\Notifications;
 
-use App\Models\Article;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use NotificationChannels\WebPush\WebPushChannel;
 use NotificationChannels\WebPush\WebPushMessage;
 
-class NewArticle extends Notification implements ShouldQueue
+class UptimeMonitor extends Notification implements ShouldQueue
 {
     use Queueable;
 
     /**
      * Create a new notification instance.
-     *
-     * @return void
      */
-    public function __construct(public Article $article)
+    public function __construct(public string $message)
     {
         //
     }
@@ -26,10 +23,9 @@ class NewArticle extends Notification implements ShouldQueue
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
-     * @return array
+     * @return array<int, string>
      */
-    public function via($notifiable)
+    public function via(object $notifiable): array
     {
         return [WebPushChannel::class];
     }
@@ -37,12 +33,8 @@ class NewArticle extends Notification implements ShouldQueue
     public function toWebPush($notifiable, $notification)
     {
         return (new WebPushMessage)
-            ->title($this->article->title)
+            ->title($this->message)
             ->icon(mix('/images/favicons/favicon-192x192.png'))
-            ->body("Veja mais sobre: {$this->article->title}")
-            ->action('Ver post', 'show.post')
-            ->data([
-                'link' => $this->article->url,
-            ]);
+            ->body($this->message);
     }
 }

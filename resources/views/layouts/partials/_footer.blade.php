@@ -10,7 +10,6 @@
                 <a href='{{ mix('/feed.xml') }}' class='link-rss-feed'>RSS Feed</a> |
                 <a href='{{ mix('/sitemap.xml') }}' class='at-link-sitemap'>Sitemap</a> |
                 <button class="btn without-style light small enable-notifications">Ativar Notificações</button>
-                @auth I'm AUTHENTICATED @endauth
             </section>
         </div>
 

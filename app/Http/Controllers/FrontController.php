@@ -2,26 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Tag;
-use App\Models\Guest;
-use App\Models\Article;
-use App\Models\Category;
 use Illuminate\View\View;
 use App\View\Shared\HomeSeo;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Cache;
+use App\Notifications\UptimeMonitor;
 use Illuminate\View\AnonymousComponent;
-use App\Http\Requests\FrontSearchRequest;
 use GrahamCampbell\GitHub\Facades\GitHub;
 use App\DataObjects\Front\GithubRepositoryData;
 use App\Support\Http\Controllers\BaseController;
-use App\Http\Requests\FrontSubscribeNotificationRequest;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+
+use Illuminate\Support\Facades\{
+    DB,
+    Cache,
+    Blade,
+    Notification,
+};
+
+use App\Models\{
+    Tag,
+    User,
+    Guest,
+    Article,
+    Category,
+    UptimeWebhookCall,
+};
+
+use App\Http\Requests\{
+    FrontSearchRequest,
+    FrontUptimeWebhookRequest,
+    FrontSubscribeNotificationRequest,
+};
 
 class FrontController extends BaseController
 {
+    private const UPTIME_DOWN_STATUS = 0;
+
     /**
      * Create a new controller instance.
      *
@@ -43,7 +60,7 @@ class FrontController extends BaseController
         $guest = Guest::firstOrCreate(['endpoint' => $endpoint = $request->input('endpoint')]);
 
         $subscription = $guest->updatePushSubscription(
-            $request->input('endpoint'),
+            $endpoint,
             $request->input('public_key'),
             $request->input('auth_token'),
             $request->input('encoding'),
@@ -52,6 +69,51 @@ class FrontController extends BaseController
         auth('guest')->login($guest);
 
         return response()->json([], 200);
+    }
+
+    /**
+     * Register the logged-in user so that they can receive notifications.
+     *
+     * @param \App\Http\Requests\FrontSubscribeNotificationRequest $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function addUserToBeNotifiedToUptimeMonitor(FrontSubscribeNotificationRequest $request): JsonResponse
+    {
+        /** @var \App\Models\User */
+        $user = auth()->user();
+
+        DB::transaction(fn () =>
+            $user->updateShouldBeNotified()
+                 ->updatePushSubscription(
+                    $request->input('endpoint'),
+                    $request->input('public_key'),
+                    $request->input('auth_token'),
+                    $request->input('encoding'),
+                 )
+        );
+
+        return response()->json(status: JsonResponse::HTTP_CREATED);
+    }
+
+    /**
+     * @param \App\Http\Requests\FrontUptimeWebhookRequest $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function uptimeWebhook(FrontUptimeWebhookRequest $request): JsonResponse
+    {
+        UptimeWebhookCall::create($request->validated());
+
+        $message = trim($request->input('msg'), '"');
+
+        if ($request->input('heartbeat')['status'] === self::UPTIME_DOWN_STATUS) {
+            report($message);
+        }
+
+        Notification::send(User::onlyShouldBeNotified()->get(), new UptimeMonitor($message));
+
+        return response()->json(status: JsonResponse::HTTP_NO_CONTENT);
     }
 
     /**

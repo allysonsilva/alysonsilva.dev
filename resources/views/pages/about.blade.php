@@ -123,6 +123,10 @@
             <p class="about-page__contact-text">Looking for a developer? I'd love to chat through your requirements &amp; help you build something awesome. Please reach out to me via <a href="mailto:hi@alyson.dev">email</a> and I'll get back to you as soon as I can.</p>
             <h4 class="about-page__contact-subtitle">Anything Else</h4>
             <p class="about-page__contact-text">If you want to get in touch to chat about programming, product or anything else, flick me an <a href="mailto:hi@alyson.dev">email</a> or send me a DM on <a href="https://twitter.com/alysonsilvadev">twitter</a>. I'd love to hear from you!</p>
+
+            @auth('admin')
+                <button class="btn without-style small add-user-to-uptime-notifications">Ativar UPTIME🔔</button>
+            @endauth
         </div>
     </section>
 @endsection
