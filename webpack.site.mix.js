@@ -26,8 +26,8 @@ mix.options({
 })
 
 if (! mix.inProduction()) {
-   mix.sourceMaps()
-   mix.webpackConfig({devtool: 'inline-source-map'})
+    mix.sourceMaps()
+    mix.webpackConfig({devtool: 'inline-source-map'})
 }
 
 mix.copyDirectory('resources/images', 'public/images')

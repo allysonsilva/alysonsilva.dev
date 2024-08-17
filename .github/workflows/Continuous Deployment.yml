@@ -128,6 +128,8 @@ jobs:
                 build-args: |
                   "DOCKER_FOLDER=${{ env.DOCKER_FOLDER }}"
                   "APP_DOCKER_REPO=${{ env.APP_DOCKER_REPO }}"
+                  "GITHUB_SHA=$GITHUB_SHA"
+                  "GITHUB_REF=$GITHUB_REF"
                 cache-from: |
                   type=gha,scope=frontend
                   type=gha,scope=dependencies

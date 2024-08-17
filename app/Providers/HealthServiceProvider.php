@@ -8,6 +8,8 @@ use Illuminate\Support\ServiceProvider;
 use Spatie\Health\Checks\Checks\{
     RedisCheck,
     CacheCheck,
+    QueueCheck,
+    ScheduleCheck,
     DatabaseCheck,
     DebugModeCheck,
     EnvironmentCheck,
@@ -28,6 +30,11 @@ class HealthServiceProvider extends ServiceProvider
             RedisCheck::new(),
             DatabaseCheck::new(),
             OptimizedAppCheck::new(),
+            // By default, the QueueCheck will fail when the job dispatched by DispatchQueueCheckJobsCommand isn't handled within 5 minutes.
+            QueueCheck::new()->onQueue(['default'])->failWhenHealthJobTakesLongerThanMinutes(5),
+            // The ScheduleCheckHeartbeatCommand will write the current timestamp into the cache.
+            // The ScheduleCheck will verify that that timestamp is not over a minute.
+            ScheduleCheck::new()->heartbeatMaxAgeInMinutes(2),
         ];
 
         if ($this->app->isProduction()):

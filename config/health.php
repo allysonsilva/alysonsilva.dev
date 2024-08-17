@@ -8,9 +8,24 @@ return [
      * can use multiple stores at the same time.
      */
     'result_stores' => [
+        Spatie\Health\ResultStores\EloquentHealthResultStore::class => [
+            'connection' => env('HEALTH_DB_CONNECTION', env('DB_CONNECTION')),
+            'model' => Spatie\Health\Models\HealthCheckResultHistoryItem::class,
+            'keep_history_for_days' => 5,
+        ],
+
+        /*
         Spatie\Health\ResultStores\CacheHealthResultStore::class => [
             'store' => 'file',
         ],
+
+        Spatie\Health\ResultStores\JsonFileHealthResultStore::class => [
+            'disk' => 's3',
+            'path' => 'health.json',
+        ],
+
+        Spatie\Health\ResultStores\InMemoryHealthResultStore::class,
+        */
     ],
 
     /*
@@ -21,7 +36,7 @@ return [
         /*
          * Notifications will only get sent if this option is set to `true`.
          */
-        'enabled' => true,
+        'enabled' => env('HEALTH_NOTIFICATION_ENABLED', true),
 
         'notifications' => [
             Spatie\Health\Notifications\CheckFailedNotification::class => ['mail'],
@@ -40,7 +55,7 @@ return [
          * With this setting, notifications are throttled. By default, you'll
          * only get one notification per hour.
          */
-        'throttle_notifications_for_minutes' => 10,
+        'throttle_notifications_for_minutes' => 60,
         'throttle_notifications_key' => 'health:latestNotificationSentAt:',
 
         'mail' => [
@@ -59,9 +74,7 @@ return [
              * If this is set to null the default channel of the webhook will be used.
              */
             'channel' => null,
-
             'username' => null,
-
             'icon' => null,
         ],
     ],
@@ -97,7 +110,7 @@ return [
      * - light: light mode
      * - dark: dark mode
      */
-    'theme' => 'dark',
+    'theme' => env('HEALTH_THEME', 'dark'),
 
     /*
      * When enabled, completed `HealthQueueJob`s will be displayed
