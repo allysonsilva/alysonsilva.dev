@@ -1,7 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Spatie\Health\Http\Controllers\HealthCheckResultsController;
+
+use Spatie\Health\Http\Controllers\{
+    HealthCheckResultsController,
+    HealthCheckJsonResultsController
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -16,4 +20,5 @@ Route::middleware('auth:sanctum')->name('logged.')->group(function () {
     });
 
     Route::get('/health', HealthCheckResultsController::class);
+    Route::get('/health-detailed', HealthCheckJsonResultsController::class);
 });

@@ -24,7 +24,16 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('cache:prune-stale-tags')->hourly();
 
-        // $schedule->command(\Spatie\Health\Commands\RunHealthChecksCommand::class)->everyMinute();
+        $schedule->command(\Spatie\Health\Commands\DispatchQueueCheckJobsCommand::class)->everyMinute()->withoutOverlapping(10);
+        $schedule->command(\Spatie\Health\Commands\ScheduleCheckHeartbeatCommand::class)->everyMinute()->withoutOverlapping(10);
+
+        $schedule->command(\Spatie\Health\Commands\RunHealthChecksCommand::class)->everyMinute();
+
+        $schedule->command('model:prune', [
+            '--model' => [
+                \Spatie\Health\Models\HealthCheckResultHistoryItem::class,
+            ],
+        ])->daily();
     }
 
     /**
