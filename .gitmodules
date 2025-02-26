@@ -1,4 +1,4 @@
-[submodule "docker"]
-	path = docker
-	url = git@github.com:allysonsilva/blog-docker.git
+[submodule "k3s"]
+	path = k3s
+	url = http://github.com/allysonsilva/blog-k3s
 	branch = main
