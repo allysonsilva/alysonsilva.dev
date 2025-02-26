@@ -59,6 +59,8 @@ Route::get('/feed', fn () => response()->view('public::feed', [], 200)
 
 Route::get('/rss/' . sha1(Str::random(10)), FeedController::class)->name('rss.xml');
 
+Route::get('version', fn () => response()->json('v1'));
+
 Route::get('/signed-login/{admin}', function (Request $request, User $admin) {
     // if (app()->isProduction()) {
     //     return;
