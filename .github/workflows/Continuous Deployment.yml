@@ -1,4 +1,4 @@
-name: Continuous Deployment
+name: GitOps Continuous Deployment
 
 on:
   workflow_dispatch:
@@ -10,15 +10,19 @@ on:
 
 run-name: ${{ github.workflow }} by @${{ github.actor }} from ${{ github.ref_name }}
 
+env:
+  APP_CONTAINER_REPO: ${{ vars.APP_CONTAINER_REPO }}
+  K3S_FOLDER: "./k3s"
+  K3S_REPOSITORY: "allysonsilva/blog-k3s"
+
 jobs:
 
-  publish:
+  build:
     if: (!contains(github.event.head_commit.message, 'skip deploy'))
     name: Deploy New Blog Version
     runs-on: ubuntu-latest
 
     env:
-      APP_CONTAINER_REPO: ${{ vars.APP_CONTAINER_REPO }}
       APP_BUILD_CONTAINER_PATH: ${{ github.workspace }}/k3s/app/php
 
     steps:
@@ -26,6 +30,11 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
+
+      - name: Copy .dockerignore
+        run: |-
+          cd ${K3S_FOLDER} && make docker/config-env
+          cp .dockerignore ./../
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -57,8 +66,8 @@ jobs:
             type=gha,scope=frontend
             type=registry,ref=${{ env.APP_CONTAINER_REPO }}:frontend
           cache-to: |
-              type=gha,mode=max,scope=frontend
-              type=registry,ref=${{ env.APP_CONTAINER_REPO }}:frontend,mode=max,image-manifest=true
+            type=gha,mode=max,scope=frontend
+            type=registry,ref=${{ env.APP_CONTAINER_REPO }}:frontend,mode=max,image-manifest=true
 
       - name: Build && Push [EXTENSIONS + PACKAGES]
         if: ${{ vars.WITH_BUILD_APP_DEPENDENCIES == 'true' }} && github.event_name != 'pull_request'
@@ -73,5 +82,95 @@ jobs:
             type=gha,scope=dependencies
             type=registry,ref=${{ env.APP_CONTAINER_REPO }}:dependencies
           cache-to: |
-              type=gha,mode=max,scope=dependencies
-              type=registry,ref=${{ env.APP_CONTAINER_REPO }}:dependencies,mode=max,image-manifest=true
+            type=gha,mode=max,scope=dependencies
+            type=registry,ref=${{ env.APP_CONTAINER_REPO }}:dependencies,mode=max,image-manifest=true
+
+      - name: Build && Push [MAIN-APP] 🔥
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          target: main
+          file: ${{ env.APP_BUILD_CONTAINER_PATH }}/Dockerfile
+          # platforms: linux/amd64,linux/arm64
+          build-args: |
+            "GITHUB_SHA=$GITHUB_SHA"
+            "GITHUB_REF=$GITHUB_REF"
+          cache-from: |
+            type=gha,scope=frontend
+            type=gha,scope=dependencies
+            type=gha,scope=main
+            type=registry,ref=${{ env.APP_CONTAINER_REPO }}:latest
+          cache-to: |
+            type=gha,mode=max,scope=main
+            type=registry,ref=${{ env.APP_CONTAINER_REPO }}:latest,mode=max,image-manifest=true
+          tags: |
+            ${{ env.APP_CONTAINER_REPO }}:latest
+            ${{ env.APP_CONTAINER_REPO }}:${{ github.sha }}
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs:
+      - build
+
+    steps:
+      - name: Checkout K3S Code
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ env.K3S_REPOSITORY }}
+          persist-credentials: false
+          fetch-depth: 0
+          ref: main
+
+      - name: Setup Kustomize
+        uses: imranismail/setup-kustomize@v2
+        with:
+          kustomize-version: "5.4.3"
+
+      - name: Update Kubernetes manifests 🏗️
+        run: |
+          cd app/delivery
+          kustomize edit set image blog-image=$APP_CONTAINER_REPO:${{ github.sha }}
+          cat kustomization.yaml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "ci: Rolling image to tag ${{ github.sha }} 🚀"
+
+      - name: Push - Update Kubernetes manifests 🚚
+        uses: ad-m/github-push-action@master
+        with:
+          repository: ${{ env.K3S_REPOSITORY }}
+          github_token: ${{ secrets.BLOG_K3S_PAT_TOKEN }}
+          branch: main
+
+  k3s-submodule:
+    name: Update K3S Submodule
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs: deploy
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Git Submodule Update
+        run: |
+          git pull --recurse-submodules
+          git submodule update --remote --recursive
+
+      - name: Commit update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Auto updated submodule references"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
