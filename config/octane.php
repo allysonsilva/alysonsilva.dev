@@ -37,7 +37,7 @@ return [
     |
     */
 
-    'server' => env('OCTANE_SERVER', 'frankenphp'),
+    'server' => env('OCTANE_SERVER', 'swoole'),
 
     /*
     |--------------------------------------------------------------------------

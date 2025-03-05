@@ -149,7 +149,15 @@ jobs:
           github_token: ${{ secrets.BLOG_K3S_PAT_TOKEN }}
           branch: main
 
-  k3s-submodule:
+      # @see https://mattstauffer.com/blog/how-to-trigger-a-webhook-on-a-schedule-using-github-actions/
+      - name: ArgoCD Deployment Webhook
+        uses: distributhor/workflow-webhook@v3
+        with:
+          webhook_type: 'json'
+          webhook_url: ${{ secrets.ARGOCD_WEBHOOK_URL }}
+          webhook_secret: ${{ secrets.ARGOCD_WEBHOOK_SECRET }}
+
+  k3s:
     name: Update K3S Submodule
     runs-on: ubuntu-latest
     permissions:
