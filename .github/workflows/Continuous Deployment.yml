@@ -85,6 +85,22 @@ jobs:
             type=gha,mode=max,scope=dependencies
             type=registry,ref=${{ env.APP_CONTAINER_REPO }}:dependencies,mode=max,image-manifest=true
 
+      - name: Build && Push [VENDOR]
+        if: ${{ vars.WITH_BUILD_APP_VENDOR == 'true' }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          target: vendor
+          tags: ${{ env.APP_CONTAINER_REPO }}:vendor
+          file: ${{ env.APP_BUILD_CONTAINER_PATH }}/Dockerfile
+          cache-from: |
+            type=gha,scope=vendor
+            type=registry,ref=${{ env.APP_CONTAINER_REPO }}:vendor
+          cache-to: |
+            type=gha,mode=max,scope=vendor
+            type=registry,ref=${{ env.APP_CONTAINER_REPO }}:vendor,mode=max,image-manifest=true
+
       - name: Build && Push [MAIN-APP] 🔥
         uses: docker/build-push-action@v5
         with:
@@ -97,9 +113,13 @@ jobs:
             "GITHUB_SHA=$GITHUB_SHA"
             "GITHUB_REF=$GITHUB_REF"
           cache-from: |
-            type=gha,scope=frontend
             type=gha,scope=dependencies
+            type=gha,scope=vendor
+            type=gha,scope=frontend
             type=gha,scope=main
+            type=registry,ref=${{ env.APP_CONTAINER_REPO }}:dependencies
+            type=registry,ref=${{ env.APP_CONTAINER_REPO }}:vendor
+            type=registry,ref=${{ env.APP_CONTAINER_REPO }}:frontend
             type=registry,ref=${{ env.APP_CONTAINER_REPO }}:latest
           cache-to: |
             type=gha,mode=max,scope=main
