@@ -67,7 +67,6 @@ jobs:
             type=registry,ref=${{ env.APP_CONTAINER_REPO }}:frontend
           cache-to: |
             type=gha,mode=max,scope=frontend
-            type=registry,ref=${{ env.APP_CONTAINER_REPO }}:frontend,mode=max,image-manifest=true
 
       - name: Build && Push [EXTENSIONS + PACKAGES]
         if: ${{ vars.WITH_BUILD_APP_DEPENDENCIES == 'true' }} && github.event_name != 'pull_request'
@@ -83,7 +82,6 @@ jobs:
             type=registry,ref=${{ env.APP_CONTAINER_REPO }}:dependencies
           cache-to: |
             type=gha,mode=max,scope=dependencies
-            type=registry,ref=${{ env.APP_CONTAINER_REPO }}:dependencies,mode=max,image-manifest=true
 
       - name: Build && Push [VENDOR]
         if: ${{ vars.WITH_BUILD_APP_VENDOR == 'true' }}
@@ -99,7 +97,6 @@ jobs:
             type=registry,ref=${{ env.APP_CONTAINER_REPO }}:vendor
           cache-to: |
             type=gha,mode=max,scope=vendor
-            type=registry,ref=${{ env.APP_CONTAINER_REPO }}:vendor,mode=max,image-manifest=true
 
       - name: Build && Push [MAIN-APP] 🔥
         uses: docker/build-push-action@v5
@@ -123,7 +120,6 @@ jobs:
             type=registry,ref=${{ env.APP_CONTAINER_REPO }}:latest
           cache-to: |
             type=gha,mode=max,scope=main
-            type=registry,ref=${{ env.APP_CONTAINER_REPO }}:latest,mode=max,image-manifest=true
           tags: |
             ${{ env.APP_CONTAINER_REPO }}:latest
             ${{ env.APP_CONTAINER_REPO }}:${{ github.sha }}
@@ -169,13 +165,31 @@ jobs:
           github_token: ${{ secrets.BLOG_K3S_PAT_TOKEN }}
           branch: main
 
-      # @see https://mattstauffer.com/blog/how-to-trigger-a-webhook-on-a-schedule-using-github-actions/
-      - name: ArgoCD Deployment Webhook
-        uses: distributhor/workflow-webhook@v3
+      # https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/use-cases/ssh/ssh-warp-to-tunnel/
+      - name: Cloudflare Warp - ByPass GitHub Actions
+        uses: Boostport/setup-cloudflare-warp@v1
         with:
-          webhook_type: 'json'
-          webhook_url: ${{ secrets.ARGOCD_WEBHOOK_URL }}
-          webhook_secret: ${{ secrets.ARGOCD_WEBHOOK_SECRET }}
+          organization: ${{ secrets.CLOUDFLARE_ORGANIZATION }}
+          auth_client_id: ${{ secrets.CLOUDFLARE_AUTH_CLIENT_ID }}
+          auth_client_secret: ${{ secrets.CLOUDFLARE_AUTH_CLIENT_SECRET }}
+          configure_docker_dns: true
+
+      - name: 'Update APP - Deploy Blue-Green 🚀'
+        uses: appleboy/ssh-action@v1.2.1
+        with:
+          # ssh-keygen -t ed25519 -b 4096 -C "github-actions-deployment" -f ~/.ssh/github_actions
+          # Add ed25519 key into Authorized keys: cat ~/.ssh/github_actions.pub | ssh b@B 'cat >> .ssh/authorized_keys'
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          # Copy rsa Private key: cat ~/.ssh/github_actions | pbcopy
+          key: ${{ secrets.SSH_CONTENT_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          command_timeout: 1m
+          script: |
+            kubectl config set-context --current --namespace=argocd
+            kubectl argo rollouts abort blog-rollout 2>/dev/null || true
+            argocd app sync argocd/blog > /dev/null 2>&1 || true
+            kubectl config set-context --current --namespace=default
 
   k3s:
     name: Update K3S Submodule
