@@ -124,6 +124,21 @@ jobs:
             ${{ env.APP_CONTAINER_REPO }}:latest
             ${{ env.APP_CONTAINER_REPO }}:${{ github.sha }}
 
+      - name: Build && Push [INIT-APP]
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          target: main
+          file: ${{ env.APP_BUILD_CONTAINER_PATH }}/Dockerfile
+          build-args: |
+            "APP_ENTRYPOINT_FILE=docker-entrypoint-init.sh"
+          cache-from: |
+            type=gha,scope=main
+            type=registry,ref=${{ env.APP_CONTAINER_REPO }}:latest
+          tags: |
+            ${{ env.APP_CONTAINER_REPO }}:init
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
