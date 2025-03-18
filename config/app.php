@@ -20,6 +20,8 @@ return [
 
     'service_name' => env('CONTAINER_ROLE'),
 
+    'mix_url' => env('MIX_ASSET_URL', null),
+
     /*
     |--------------------------------------------------------------------------
     | Google Analytics

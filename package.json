@@ -39,6 +39,7 @@
         "markdown-it": "^13.0.1",
         "prismjs": "^1.29.0",
         "sweetalert2": "^11.7.1",
+        "webpack-s3-plugin": "^1.2.0-rc.0",
         "workbox-window": "^6.5.4"
     }
 }

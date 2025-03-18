@@ -1,5 +1,6 @@
 const mix = require('laravel-mix')
 const path = require('path')
+const S3Plugin = require('webpack-s3-plugin')
 
 require('laravel-mix-merge-manifest')
 
@@ -33,6 +34,25 @@ mix.options({
         port: 5040,
     },
 })
+
+if (mix.inProduction()) {
+    mix.webpackConfig({
+        plugins: [
+            new S3Plugin({
+                s3Options: {
+                    accessKeyId: process.env.MIX_S3_KEY,
+                    secretAccessKey: process.env.MIX_S3_SECRET,
+                    s3BucketEndpoint: true,
+                    endpoint: process.env.MIX_S3_ENDPOINT,
+                },
+                s3UploadOptions: {
+                    Bucket: process.env.MIX_S3_BUCKET,
+                    CacheControl: 'public, max-age=31536000'
+                },
+            }),
+        ]
+    });
+}
 
 mix.disableNotifications()
 
