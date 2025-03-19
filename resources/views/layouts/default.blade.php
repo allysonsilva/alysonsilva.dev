@@ -14,7 +14,7 @@
 <script src="{{ mix('site/js/vendors-app.js') }}" defer></script>
 
 <!-- WORKER WINDOW -->
-<script type="module" src="{{ mix('/site/js/install-sw.js') }}"></script>
+<script type="module" src="{{ mix_local('/site/js/install-sw.js') }}"></script>
 <!-- //WORKER WINDOW -->
 </head>
 

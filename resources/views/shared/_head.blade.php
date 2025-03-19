@@ -12,7 +12,7 @@
 
 <meta name="theme-color" content="#303238">
 
-<link rel="manifest" href="{{ mix('/manifest.json') }}">
+<link rel="manifest" href="{{ mix_local('/manifest.json') }}">
 <link rel="shortcut icon" href="{{ mix('/images/favicons/favicon.ico') }}">
 
 <link rel="apple-touch-icon" sizes="57x57" href="{{ mix('/images/favicons/apple-icon-57x57.png') }}">
