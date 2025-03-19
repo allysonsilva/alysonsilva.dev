@@ -1,10 +1,9 @@
 <?php
 
+use App\Support\Helpers\MixLocal;
 use Illuminate\Support\HtmlString;
 
-function mix_local(string $path): HtmlString|string
+function mix_local(string $path, string $manifestDirectory = ''): HtmlString|string
 {
-    config()->set('app.mix_url', null);
-
-    return mix($path);
+    return app(MixLocal::class)(...func_get_args());
 }

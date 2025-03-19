@@ -206,7 +206,7 @@ jobs:
           script: |
             kubectl config set-context --current --namespace=argocd
             kubectl argo rollouts abort blog-rollout 2>/dev/null || true
-            argocd app sync argocd/blog > /dev/null 2>&1 || true
+            argocd app sync argocd/blog --async > /dev/null 2>&1 || true
             kubectl config set-context --current --namespace=default
 
   k3s:
