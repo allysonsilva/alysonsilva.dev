@@ -135,12 +135,9 @@ jobs:
             "APP_ENTRYPOINT_FILE=docker-entrypoint-init.sh"
           cache-from: |
             type=gha,scope=main
-            type=gha,scope=init-app
             type=registry,ref=${{ env.APP_CONTAINER_REPO }}:latest
-          cache-to: |
-            type=gha,mode=max,scope=init-app
           tags: |
-            ${{ env.APP_CONTAINER_REPO }}:init
+            ${{ env.APP_CONTAINER_REPO }}:init-${{ github.sha }}
 
   deploy:
     name: Deploy
@@ -168,6 +165,7 @@ jobs:
         run: |
           cd app/delivery
           kustomize edit set image blog-image=$APP_CONTAINER_REPO:${{ github.sha }}
+          kustomize edit set image blog-image-pre-sync=$APP_CONTAINER_REPO:init-${{ github.sha }}
           cat kustomization.yaml
 
       - name: Commit to GitHub
