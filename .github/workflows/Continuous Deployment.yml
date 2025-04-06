@@ -163,10 +163,9 @@ jobs:
 
       - name: Update Kubernetes manifests 🏗️
         run: |
-          cd app/delivery
-          kustomize edit set image blog-image=$APP_CONTAINER_REPO:${{ github.sha }}
-          kustomize edit set image blog-image-pre-sync=$APP_CONTAINER_REPO:init-${{ github.sha }}
-          cat kustomization.yaml
+          cd app/argocd/components
+          cd blog-image && kustomize edit set image blog-image=$APP_CONTAINER_REPO:${{ github.sha }} && cat kustomization.yaml
+          cd ../blog-pre-sync-image && kustomize edit set image blog-image-pre-sync=$APP_CONTAINER_REPO:init-${{ github.sha }} && cat kustomization.yaml
 
       - name: Commit to GitHub
         run: |
