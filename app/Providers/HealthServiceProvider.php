@@ -28,10 +28,10 @@ class HealthServiceProvider extends ServiceProvider
         $checks = [
             CacheCheck::new(),
             RedisCheck::new(),
-            DatabaseCheck::new(),
+            DatabaseCheck::new()->name('Main Database')->connectionName('mysql'),
             OptimizedAppCheck::new(),
             // By default, the QueueCheck will fail when the job dispatched by DispatchQueueCheckJobsCommand isn't handled within 5 minutes.
-            QueueCheck::new()->onQueue(['queue_default'])->failWhenHealthJobTakesLongerThanMinutes(5),
+            QueueCheck::new()->failWhenHealthJobTakesLongerThanMinutes(5),
             // The ScheduleCheckHeartbeatCommand will write the current timestamp into the cache.
             // The ScheduleCheck will verify that that timestamp is not over a minute.
             ScheduleCheck::new()->heartbeatMaxAgeInMinutes(2),

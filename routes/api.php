@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\TagController;
 use App\Http\Controllers\API\ArticleController;
 use App\Http\Controllers\API\CategoryController;
-use Spatie\Health\Http\Controllers\HealthCheckJsonResultsController;
+use App\Http\Controllers\HealthCheckController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,5 +30,3 @@ Route::prefix('v1')->name('v1.')->group(function () {
     Route::apiResource('tags', TagController::class)
         ->parameters(['tags' => 'tagUuid']);
 });
-
-Route::get('/health', HealthCheckJsonResultsController::class);

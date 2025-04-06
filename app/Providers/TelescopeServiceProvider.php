@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Str;
+use Laravel\Telescope\EntryType;
 use Laravel\Telescope\Telescope;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -46,10 +48,21 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
 
         $this->hideSensitiveRequestDetails();
 
-        Telescope::filter(function (IncomingEntry $entry) {
-            if (! app()->isProduction()) {
-                return true;
+        Telescope::tag(function (IncomingEntry $entry) {
+            $tags = [];
+
+            if ($entry->type === EntryType::REQUEST) {
+                $tags = array_merge([
+                    'status:' . $entry->content['response_status'],
+                    'uri:' . Str::slug(trim(parse_url($entry->content['uri'], PHP_URL_PATH), '/')),
+                ], $tags);
             }
+
+            return $tags;
+        });
+
+        Telescope::filter(function (IncomingEntry $entry) {
+            return true;
 
             return $entry->isReportableException() ||
                    $entry->isFailedRequest() ||

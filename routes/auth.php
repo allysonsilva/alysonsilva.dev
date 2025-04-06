@@ -1,11 +1,7 @@
 <?php
 
+use App\Http\Controllers\HealthCheckController;
 use Illuminate\Support\Facades\Route;
-
-use Spatie\Health\Http\Controllers\{
-    HealthCheckResultsController,
-    HealthCheckJsonResultsController
-};
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +15,8 @@ Route::middleware('auth:sanctum')->name('logged.')->group(function () {
         Route::get('me/profile', fn() => auth()->user())->name('profile');
     });
 
-    Route::get('/health', HealthCheckResultsController::class);
-    Route::get('/health-detailed', HealthCheckJsonResultsController::class);
+    // /healthz?view&fresh
+    // /healthz?exception&fresh
+    // /healthz?json&fresh
+    Route::get('healthz', HealthCheckController::class)->name('health-check');
 });
