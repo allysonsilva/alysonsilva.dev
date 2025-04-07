@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\TagController;
 use App\Http\Controllers\API\ArticleController;
 use App\Http\Controllers\API\CategoryController;
-use App\Http\Controllers\HealthCheckController;
 
 /*
 |--------------------------------------------------------------------------

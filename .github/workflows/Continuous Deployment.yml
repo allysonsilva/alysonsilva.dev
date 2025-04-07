@@ -161,11 +161,16 @@ jobs:
         with:
           kustomize-version: "5.4.3"
 
+      # - name: Set short SHA
+      #   run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
       - name: Update Kubernetes manifests 🏗️
         run: |
-          cd app/argocd/components
-          cd blog-image && kustomize edit set image blog-image=$APP_CONTAINER_REPO:${{ github.sha }} && cat kustomization.yaml
-          cd ../blog-pre-sync-image && kustomize edit set image blog-image-pre-sync=$APP_CONTAINER_REPO:init-${{ github.sha }} && cat kustomization.yaml
+          SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
+          cd app/argocd/blog
+          kustomize edit set image blog-image=$APP_CONTAINER_REPO:$SHORT_SHA
+          kustomize edit set image blog-image-pre-sync=$APP_CONTAINER_REPO:init-$SHORT_SHA
+          cat kustomization.yaml
 
       - name: Commit to GitHub
         run: |
