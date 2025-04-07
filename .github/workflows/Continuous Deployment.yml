@@ -17,7 +17,17 @@ env:
 
 jobs:
 
+  short-sha:
+    runs-on: ubuntu-latest
+    outputs:
+      value: ${{ steps.extract-short-sha.outputs.value }}
+    steps:
+      - name: Extrair os primeiros 7 caracteres do $GITHUB_SHA
+        id: extract-short-sha
+        run: echo "value=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
   build:
+    needs: short-sha
     if: (!contains(github.event.head_commit.message, 'skip deploy'))
     name: Deploy New Blog Version
     runs-on: ubuntu-latest
@@ -122,7 +132,7 @@ jobs:
             type=gha,mode=max,scope=main
           tags: |
             ${{ env.APP_CONTAINER_REPO }}:latest
-            ${{ env.APP_CONTAINER_REPO }}:${{ github.sha }}
+            ${{ env.APP_CONTAINER_REPO }}:${{ needs.short-sha.outputs.value }}
 
       - name: Build && Push [INIT-APP] 🚀
         uses: docker/build-push-action@v5
@@ -137,7 +147,7 @@ jobs:
             type=gha,scope=main
             type=registry,ref=${{ env.APP_CONTAINER_REPO }}:latest
           tags: |
-            ${{ env.APP_CONTAINER_REPO }}:init-${{ github.sha }}
+            ${{ env.APP_CONTAINER_REPO }}:init-${{ needs.short-sha.outputs.value }}
 
   deploy:
     name: Deploy
@@ -145,6 +155,7 @@ jobs:
     permissions:
       contents: write
     needs:
+      - short-sha
       - build
 
     steps:
@@ -168,15 +179,15 @@ jobs:
         run: |
           SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
           cd app/argocd/blog
-          kustomize edit set image blog-image=$APP_CONTAINER_REPO:$SHORT_SHA
-          kustomize edit set image blog-image-pre-sync=$APP_CONTAINER_REPO:init-$SHORT_SHA
+          kustomize edit set image blog-image=$APP_CONTAINER_REPO:${{ needs.short-sha.outputs.value }}
+          kustomize edit set image blog-image-pre-sync=$APP_CONTAINER_REPO:init-${{ needs.short-sha.outputs.value }}
           cat kustomization.yaml
 
       - name: Commit to GitHub
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "ci: Rolling image to tag ${{ github.sha }} 🚀"
+          git commit -am "ci: Rolling image to tag ${{ needs.short-sha.outputs.value }} 🚀"
 
       - name: Push - Update Kubernetes manifests 🚚
         uses: ad-m/github-push-action@master
