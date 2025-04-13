@@ -134,21 +134,6 @@ jobs:
             ${{ env.APP_CONTAINER_REPO }}:latest
             ${{ env.APP_CONTAINER_REPO }}:${{ needs.short-sha.outputs.value }}
 
-      - name: Build && Push [INIT-APP] 🚀
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          target: main
-          file: ${{ env.APP_BUILD_CONTAINER_PATH }}/Dockerfile
-          build-args: |
-            "APP_ENTRYPOINT_FILE=docker-entrypoint-init.sh"
-          cache-from: |
-            type=gha,scope=main
-            type=registry,ref=${{ env.APP_CONTAINER_REPO }}:latest
-          tags: |
-            ${{ env.APP_CONTAINER_REPO }}:init-${{ needs.short-sha.outputs.value }}
-
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
@@ -180,7 +165,6 @@ jobs:
           SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
           cd app/argocd/blog
           kustomize edit set image blog-image=$APP_CONTAINER_REPO:${{ needs.short-sha.outputs.value }}
-          kustomize edit set image blog-image-pre-sync=$APP_CONTAINER_REPO:init-${{ needs.short-sha.outputs.value }}
           cat kustomization.yaml
 
       - name: Commit to GitHub
