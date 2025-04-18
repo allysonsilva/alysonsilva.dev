@@ -157,21 +157,25 @@ jobs:
         with:
           kustomize-version: "5.4.3"
 
-      # - name: Set short SHA
-      #   run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+      - name: Set $FULL_CONTAINER_REPO
+        run: |
+          # echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+          echo "FULL_CONTAINER_REPO=$APP_CONTAINER_REPO:${{ needs.short-sha.outputs.value }}" >> $GITHUB_ENV
 
       - name: Update Kubernetes manifests 🏗️
         run: |
-          SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
           cd app/argocd/blog
-          kustomize edit set image blog-image=$APP_CONTAINER_REPO:${{ needs.short-sha.outputs.value }}
+          kustomize edit set image blog-image=$FULL_CONTAINER_REPO || true
+          cat kustomization.yaml
+          cd ../queue-worker
+          kustomize edit set image queue-worker-image=$FULL_CONTAINER_REPO || true
           cat kustomization.yaml
 
       - name: Commit to GitHub
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "ci: Rolling image to tag ${{ needs.short-sha.outputs.value }} 🚀"
+          git diff --quiet || git commit -am "ci: Rolling image to tag ${{ needs.short-sha.outputs.value }} 🚀"
 
       - name: Push - Update Kubernetes manifests 🚚
         uses: ad-m/github-push-action@master
