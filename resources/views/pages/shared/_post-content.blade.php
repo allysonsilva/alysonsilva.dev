@@ -26,7 +26,7 @@
 
     <section class="post-content">
         <div id="markdown-content" class="wrap-content" itemprop="articleBody">
-            @markdown($post->content)
+            @markdown($post->content_renderable)
         </div>
 
         <div class="like-container">

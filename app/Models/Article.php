@@ -15,9 +15,11 @@ use Illuminate\Database\Eloquent\Collection;
 use GrahamCampbell\Markdown\Facades\Markdown;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Boots\ForArticle as BootForArticle;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Blade;
 
 class Article extends BaseModel implements Sitemapable, Feedable
 {
@@ -113,6 +115,20 @@ class Article extends BaseModel implements Sitemapable, Feedable
     public static function getFeedItems(): Collection
     {
         return self::all();
+    }
+
+    public function contentAsHtml(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => Markdown::convert($this->content_renderable)->getContent(),
+        );
+    }
+
+    public function contentRenderable(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => Blade::render($this->content),
+        );
     }
 
     /**
