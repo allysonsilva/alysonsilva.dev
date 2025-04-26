@@ -23,7 +23,7 @@ return [
     'jobs' => [
         // 'ping' => \App\Jobs\GitHubWebhooks\HandlePingWebhook::class,
         // 'issues.opened' => \App\Jobs\GitHubWebhooks\HandleIssueOpenedWebhookJob::class,
-        // '*' => \App\Jobs\HandleAllGitHubWebhooks::class
+        'push' => \App\Jobs\PushGitHubWebhook::class,
         'pull_request.closed' => \App\Jobs\PullRequestClosedGitHubWebhook::class,
         'commit_comment.created' => \App\Jobs\CommitCommentCreatedGitHubWebhook::class,
     ],

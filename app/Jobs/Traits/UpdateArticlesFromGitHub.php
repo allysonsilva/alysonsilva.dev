@@ -20,12 +20,19 @@ trait UpdateArticlesFromGitHub
 
             $fileObject = YamlFrontMatter::parse(file_get_contents($fileURL));
 
-            if ($articleId = $fileObject->id) {
+            if (! empty($articleId = $fileObject->id)) {
+                /** @var Article $article */
                 $article = Article::findOrFail($articleId);
+
+                if ($file['status'] === 'removed') {
+                    $article->delete();
+
+                    continue;
+                }
+
                 $article->fill(
                     array_merge($fileObject->matter(), ['content' => trim($fileObject->body())])
-                );
-                $article->save();
+                )->save();
             }
         }
 
