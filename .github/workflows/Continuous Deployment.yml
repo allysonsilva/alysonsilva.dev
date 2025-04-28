@@ -170,6 +170,9 @@ jobs:
           cd ../queue-worker
           kustomize edit set image queue-worker-image=$FULL_CONTAINER_REPO || true
           cat kustomization.yaml
+          cd ../scheduler
+          kustomize edit set image scheduler-image=$FULL_CONTAINER_REPO || true
+          cat kustomization.yaml
 
       - name: Commit to GitHub
         run: |
