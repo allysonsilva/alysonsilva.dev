@@ -56,6 +56,7 @@ mix.scripts(['resources/js/vendors/ease.min.js', 'resources/js/vendors/segment.m
 
 mix.version([
         'public/images',
+        'public/vendor',
         'public/storage/images/icons',
         'public/manifest.json',
         'public/sitemap.xml',
