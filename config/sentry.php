@@ -22,16 +22,22 @@ return [
     'environment' => env('SENTRY_ENVIRONMENT'),
 
     // @see: https://docs.sentry.io/platforms/php/guides/laravel/configuration/options/#sample-rate
-    'sample_rate' => env('SENTRY_SAMPLE_RATE') === null ? 1.0 : (float)env('SENTRY_SAMPLE_RATE'),
+    'sample_rate' => env('SENTRY_SAMPLE_RATE') === null ? 1.0 : (float) env('SENTRY_SAMPLE_RATE'),
 
     // @see: https://docs.sentry.io/platforms/php/guides/laravel/configuration/options/#traces-sample-rate
-    'traces_sample_rate' => env('SENTRY_TRACES_SAMPLE_RATE') === null ? null : (float)env('SENTRY_TRACES_SAMPLE_RATE'),
+    'traces_sample_rate' => env('SENTRY_TRACES_SAMPLE_RATE') === null ? null : (float) env('SENTRY_TRACES_SAMPLE_RATE'),
 
     // @see: https://docs.sentry.io/platforms/php/guides/laravel/configuration/options/#profiles-sample-rate
-    'profiles_sample_rate' => env('SENTRY_PROFILES_SAMPLE_RATE') === null ? null : (float)env('SENTRY_PROFILES_SAMPLE_RATE'),
+    'profiles_sample_rate' => env('SENTRY_PROFILES_SAMPLE_RATE') === null ? null : (float) env('SENTRY_PROFILES_SAMPLE_RATE'),
 
     // @see: https://docs.sentry.io/platforms/php/guides/laravel/configuration/options/#send-default-pii
     'send_default_pii' => env('SENTRY_SEND_DEFAULT_PII', false),
+
+    // @see: https://docs.sentry.io/platforms/php/guides/laravel/configuration/options/#ignore-exceptions
+    // 'ignore_exceptions' => [],
+
+    // @see: https://docs.sentry.io/platforms/php/guides/laravel/configuration/options/#ignore-transactions
+    // 'ignore_transactions' => [],
 
     // Breadcrumb specific configuration
     'breadcrumbs' => [
@@ -48,7 +54,7 @@ return [
         'sql_queries' => env('SENTRY_BREADCRUMBS_SQL_QUERIES_ENABLED', true),
 
         // Capture SQL query bindings (parameters) in SQL query breadcrumbs
-        'sql_bindings' => env('SENTRY_BREADCRUMBS_SQL_BINDINGS_ENABLED', false),
+        'sql_bindings' => env('SENTRY_BREADCRUMBS_SQL_BINDINGS_ENABLED', true),
 
         // Capture queue job information as breadcrumbs
         'queue_info' => env('SENTRY_BREADCRUMBS_QUEUE_INFO_ENABLED', true),
@@ -70,6 +76,9 @@ return [
 
         // Capture SQL queries as spans
         'sql_queries' => env('SENTRY_TRACE_SQL_QUERIES_ENABLED', true),
+
+        // Capture SQL query bindings (parameters) in SQL query spans
+        'sql_bindings' => env('SENTRY_TRACE_SQL_BINDINGS_ENABLED', true),
 
         // Capture where the SQL query originated from on the SQL query spans
         'sql_origin' => env('SENTRY_TRACE_SQL_ORIGIN_ENABLED', true),

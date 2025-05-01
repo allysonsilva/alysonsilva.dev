@@ -5,38 +5,18 @@ namespace App\Providers;
 use Illuminate\Support\Str;
 use Laravel\Telescope\EntryType;
 use Laravel\Telescope\Telescope;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Telescope\IncomingEntry;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Contracts\Foundation\Application;
 use Laravel\Telescope\Http\Middleware\Authorize;
 use Laravel\Telescope\TelescopeApplicationServiceProvider;
+use App\Http\Middleware\Authenticate as AuthenticateMiddleware;
 
 class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
 {
-    /**
-     * Configure the Telescope authorization services.
-     *
-     * @return void
-     */
-    protected function authorization()
-    {
-        $this->gate();
-
-        if ($this->app->request->is(config('telescope.path') . '*')) {
-            Auth::shouldUse('admin');
-
-            if (! app()->isLocal()) {
-                Route::middlewareGroup('telescope', ['web', 'auth:admin', Authorize::class]);
-            }
-        }
-
-        Telescope::auth(function ($request) {
-            return app()->isLocal() ||
-                   Gate::authorize('viewTelescope', [$request->user()]);
-        });
-    }
-
     /**
      * Register any application services.
      *
@@ -69,6 +49,28 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
                    $entry->isFailedJob() ||
                    $entry->isScheduledTask() ||
                    $entry->hasMonitoredTag();
+        });
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        parent::boot();
+
+        // $this->booted(function () {
+        //     $this->app['router']->pushMiddlewareToGroup('telescope', AuthenticateMiddleware::using('management'));
+        // });
+
+        $this->callAfterResolving('router', function (Router $router, Application $app) {
+            if ($this->app->isLocal()) return;
+
+            if (Str::is($router->current()->getDomain(), config('telescope.domain'))) {
+                Auth::shouldUse('admin');
+
+                Route::middlewareGroup('telescope', ['web', AuthenticateMiddleware::using('admin'), Authorize::class,]);
+            }
         });
     }
 

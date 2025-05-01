@@ -7,6 +7,8 @@ return [
 
     'emails_allowed' => array_filter(explode(',', env('TELESCOPE_EMAILS_ALLOWED', ''))),
 
+    'theme' => env('TELESCOPE_THEME', 'night'),
+
     /*
     |--------------------------------------------------------------------------
     | Telescope Domain
@@ -18,7 +20,7 @@ return [
     |
     */
 
-    'domain' => env('TELESCOPE_DOMAIN', null),
+    'domain' => env('TELESCOPE_DOMAIN'),
 
     /*
     |--------------------------------------------------------------------------
@@ -64,7 +66,7 @@ return [
     |
     */
 
-    'enabled' => env('TELESCOPE_ENABLED', false),
+    'enabled' => env('TELESCOPE_ENABLED', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -98,7 +100,10 @@ return [
     ],
 
     'ignore_paths' => [
+        'livewire*',
         'nova-api*',
+        'pulse*',
+        'healthz*',
     ],
 
     'ignore_commands' => [
@@ -147,10 +152,16 @@ return [
             'enabled' => env('TELESCOPE_GATE_WATCHER', true),
             'ignore_abilities' => [],
             'ignore_packages' => true,
+            'ignore_paths' => [],
         ],
 
         Watchers\JobWatcher::class => env('TELESCOPE_JOB_WATCHER', true),
-        Watchers\LogWatcher::class => env('TELESCOPE_LOG_WATCHER', true),
+
+        Watchers\LogWatcher::class => [
+            'enabled' => env('TELESCOPE_LOG_WATCHER', true),
+            'level' => 'error',
+        ],
+
         Watchers\MailWatcher::class => env('TELESCOPE_MAIL_WATCHER', true),
 
         Watchers\ModelWatcher::class => [
