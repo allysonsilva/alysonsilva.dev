@@ -66,7 +66,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
         $this->callAfterResolving('router', function (Router $router, Application $app) {
             if ($this->app->isLocal()) return;
 
-            if (Str::is($router->current()->getDomain(), config('telescope.domain'))) {
+            if (Str::is($router->current()?->getDomain() ?? '', config('telescope.domain'))) {
                 Auth::shouldUse('admin');
 
                 Route::middlewareGroup('telescope', ['web', AuthenticateMiddleware::using('admin'), Authorize::class,]);
